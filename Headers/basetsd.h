@@ -5,6 +5,28 @@
 #ifndef BASETSD_H
 #define BASETSD_H
 
+#ifdef PUBLIC 
+#undef PUBLIC
+#endif
+
+#ifdef PRIVATE
+#undef PRIVATE
+#endif
+
+#ifdef COMPILER
+#undef COMPILER
+#endif
+
+#if defined(_MSC_VER)
+#define PUBLIC __fastcall
+#define PRIVATE __fastcall
+#define COMPILER "MSVC"
+#elif defined(__GNUC__)
+#define PUBLIC __attribute__ ((msvc))
+#define PRIVATE __attribute__ ((msvc))
+#define COMPILER "GCC"
+#endif
+
 #ifndef VOID
 #define VOID void
 #endif
@@ -24,7 +46,6 @@
 #ifndef NULL
 #define NULL ((VOID*)0)
 #endif
-
 
 #ifndef BAD_HANDLE
 #define BAD_HANDLE 0xFFFFFFFFFFFFFFFF
@@ -91,6 +112,5 @@ typedef HANDLE *PHANDLE, *LPHANDLE;
 //Use for a count that must span the full range of a pointer.
 typedef ULONG_PTR SIZE_T, *PSIZE_T;
 typedef LONG_PTR SSIZE_T, *PSSIZE_T;
-
 
 #endif
