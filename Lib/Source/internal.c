@@ -1,6 +1,6 @@
 #include "../../Headers/scpdos.h"
 
-BOOL GetDefaultDiskDPBPointer(LPDPB lpDPB){
+BOOL PUBLIC GetDefaultDiskDPBPointer(LPDPB lpDPB){
     __asm__ __volatile__(
         "push rbx\n\t"
         "mov eax, 0x1F00\n\t"
@@ -14,7 +14,7 @@ BOOL GetDefaultDiskDPBPointer(LPDPB lpDPB){
     );
 }
 
-BOOL GetDPBPointer(DRIVE_NUMBER bNumber, LPDPB lpDPB){
+BOOL PUBLIC GetDPBPointer(DRIVE_NUMBER bNumber, LPDPB lpDPB){
     __asm__ __volatile__(
         "push rbx\n\t"
         "mov r8, rdx\n\t"
@@ -33,7 +33,7 @@ BOOL GetDPBPointer(DRIVE_NUMBER bNumber, LPDPB lpDPB){
     );
 }
 
-VOID SetCurrentProcessId(PROCESS_ID pid){
+VOID PUBLIC SetCurrentProcessId(PROCESS_ID pid){
     __asm__ __volatile__(
         "push rbx\n\t"
         "mov rbx, rcx\n\t"
@@ -42,7 +42,7 @@ VOID SetCurrentProcessId(PROCESS_ID pid){
     );
 }
 
-PROCESS_ID GetCurrentProcessId(){
+PROCESS_ID PUBLIC GetCurrentProcessId(){
     __asm__ __volatile__(
         "push rbx\n\t"
         "mov eax, 0x5100\n\t"
@@ -52,7 +52,7 @@ PROCESS_ID GetCurrentProcessId(){
     );
 }
 
-LPVOID GetPointerToDosSysVars(){
+LPVOID PUBLIC GetPointerToDosSysVars(){
     __asm__ __volatile(
         "push rbx\n\t"
         "mov eax, 0x5200\n\t"
@@ -62,7 +62,7 @@ LPVOID GetPointerToDosSysVars(){
     );
 }
 
-VOID GenerateDPB(LPVOID lpBPB, LPDPB lpDPB){
+VOID PUBLIC GenerateDPB(LPVOID lpBPB, LPDPB lpDPB){
     __asm__ __volatile__(
         "push rsi\n\t"
         "push rbp\n\t"
@@ -75,14 +75,14 @@ VOID GenerateDPB(LPVOID lpBPB, LPDPB lpDPB){
     );
 }
 
-VOID GeneratePartialPSP(LPVOID lpPSPAddress){
+VOID PUBLIC GeneratePartialPSP(LPVOID lpPSPAddress){
     __asm__ __volatile__(
         "mov rdx, rcx\n\t"
         "mov eax, 0x2600\n\t"
         "int 0x41\n\t"
     );
 }
-VOID GenerateNewPSP(LPVOID lpPSPAddress, DWORD dwSizeOfPSPAllocation){
+VOID PUBLIC GenerateNewPSP(LPVOID lpPSPAddress, DWORD dwSizeOfPSPAllocation){
     __asm__ __volatile__(
         "push rsi\n\t"
         "mov rsi, rdx\n\t"

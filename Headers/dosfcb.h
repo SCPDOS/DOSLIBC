@@ -25,5 +25,5 @@ typedef struct _extended_fcb{
 
 #endif
 
-VOID __setDTA(LPVOID lpDTA);
-LPVOID __getDTA();
+VOID PRIVATE __setDTA(LPVOID lpDTA);
+LPVOID PRIVATE __getDTA();

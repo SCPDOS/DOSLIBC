@@ -7,21 +7,21 @@
 #define MEMORY_BEST_FIT     2
 #define MEMORY_ERROR        0xFF
 #endif
-LPVOID VirtualAllocate(SIZE_T dwNumberOfParagraphs);
+LPVOID PUBLIC VirtualAllocate(SIZE_T dwNumberOfParagraphs);
 
-BOOL VirtualFree(LPVOID lpAddress);
+BOOL PUBLIC VirtualFree(LPVOID lpAddress);
 
-BOOL VirtualReallocate(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs);
+BOOL PUBLIC VirtualReallocate(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs);
 
-BYTE GetMemoryAllocationStrategy();
+BYTE PUBLIC GetMemoryAllocationStrategy();
 
-BOOL SetMemoryAllocationStrategy(BYTE bAllocationStrategy);
-
-//Undocumented but exposed function for now.
-LPVOID PhysicalAllocate(SIZE_T dwNumberOfParagraphs);
+BOOL PUBLIC SetMemoryAllocationStrategy(BYTE bAllocationStrategy);
 
 //Undocumented but exposed function for now.
-BOOL PhysicalFree(LPVOID lpAddress);
+LPVOID PUBLIC PhysicalAllocate(SIZE_T dwNumberOfParagraphs);
 
 //Undocumented but exposed function for now.
-BOOL PhysicalReallocate(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs);
+BOOL PUBLIC PhysicalFree(LPVOID lpAddress);
+
+//Undocumented but exposed function for now.
+BOOL PUBLIC PhysicalReallocate(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs);

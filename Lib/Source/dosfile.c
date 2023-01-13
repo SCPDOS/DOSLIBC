@@ -11,7 +11,7 @@
 
 #include "../../Headers/scpdos.h"
 
-BOOL CreateDirectory(LPCSTR lpDirectoryName){
+BOOL PUBLIC CreateDirectory(LPCSTR lpDirectoryName){
     __asm__ __volatile__(
         "mov rdx, rcx\n\t"
         "mov eax, 0x3900\n\t"
@@ -22,7 +22,7 @@ BOOL CreateDirectory(LPCSTR lpDirectoryName){
     );
 }
 
-BOOL DeleteDirectory(LPCSTR lpDirectoryName){
+BOOL PUBLIC DeleteDirectory(LPCSTR lpDirectoryName){
     __asm__ __volatile__(
         "mov rdx, rcx\n\t"
         "mov eax, 0x3A00\n\t"
@@ -33,7 +33,7 @@ BOOL DeleteDirectory(LPCSTR lpDirectoryName){
     );
 }
 
-BOOL ChangeCurrentDirectory(LPCSTR lpDirectoryName){
+BOOL PUBLIC ChangeCurrentDirectory(LPCSTR lpDirectoryName){
     __asm__ __volatile__(
         "mov rdx, rcx\n\t"
         "mov eax, 0x3B00\n\t"
@@ -44,7 +44,7 @@ BOOL ChangeCurrentDirectory(LPCSTR lpDirectoryName){
     );
 }
 
-HANDLE CreateFile(LPCSTR lpFileName, FILE_ATTRIBUTES dwFileAttributes){
+HANDLE PUBLIC CreateFile(LPCSTR lpFileName, FILE_ATTRIBUTES dwFileAttributes){
     /*Swap the two parameters to get them in the right registers*/
     __asm__ __volatile__ (
         "xchg rdx, rcx\n\t"
@@ -55,7 +55,7 @@ HANDLE CreateFile(LPCSTR lpFileName, FILE_ATTRIBUTES dwFileAttributes){
     );  
 }
 
-HANDLE OpenFile(LPCSTR lpFileName, FILE_OPEN_MODE dwOpenMode, \
+HANDLE PUBLIC OpenFile(LPCSTR lpFileName, FILE_OPEN_MODE dwOpenMode, \
     FILE_SHARE_MODE dwShareMode){
     /* rcx -> lpFileName, rdx = dwOpenMode  r8 = dwShareMode*/
     /* First clear bits 2 and 3 on the OpenMode */
@@ -73,7 +73,7 @@ HANDLE OpenFile(LPCSTR lpFileName, FILE_OPEN_MODE dwOpenMode, \
     );  
 }
 
-BOOL CloseFile(HANDLE hFile){
+BOOL PUBLIC CloseFile(HANDLE hFile){
     /*If we return TRUE, then handle was closed*/
     __asm__ __volatile__ (
         "mov eax, 0x3E00\n\t"
@@ -87,7 +87,7 @@ BOOL CloseFile(HANDLE hFile){
     );
 }
 
-BOOL ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, \
+BOOL PUBLIC ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, \
     LPDWORD lpNumberOfBytesRead){
         /*rcx = hFile, rdx -> lpBuffer, 
         r8 = nNumberOfBytesToRead, r9 -> NumberOfBytesRead*/
@@ -108,7 +108,7 @@ BOOL ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, \
         );
     }
 
-BOOL WriteFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, \
+BOOL PUBLIC WriteFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, \
     LPDWORD lpNumberOfBytesWritten){
         /*rcx = hFile, rdx -> lpBuffer, 
         r8 = nNumberOfBytesToWrite, r9 -> NumberOfBytesWritten*/
@@ -129,7 +129,7 @@ BOOL WriteFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, \
         );
     }
     
-BOOL DeleteFile(LPCSTR lpFileName){
+BOOL PUBLIC DeleteFile(LPCSTR lpFileName){
     __asm__ __volatile__(
         "mov rdx, rcx\n\t"
         "mov eax, 0x4100\n\t"
@@ -140,7 +140,7 @@ BOOL DeleteFile(LPCSTR lpFileName){
     );
 }
 
-DWORD SetFilePointer(HANDLE hFile, LONG lDistanceToMove, DWORD dwMoveMethod){
+DWORD PUBLIC SetFilePointer(HANDLE hFile, LONG lDistanceToMove, DWORD dwMoveMethod){
         /* This is the 32 bit version of the function*/
         /* rcx = hFile, rdx = lDistanceToMove, r8 = 0, 1, 2 */
         __asm__ __volatile__(
@@ -153,7 +153,7 @@ DWORD SetFilePointer(HANDLE hFile, LONG lDistanceToMove, DWORD dwMoveMethod){
         );
     }
 
-DWORD SetFilePointerL(HANDLE hFile, LONG lDistanceToMove, \
+DWORD PUBLIC SetFilePointerL(HANDLE hFile, LONG lDistanceToMove, \
     PLONG lpDistanceToMoveHigh, DWORD dwMoveMethod){
         /* This is the 64 bit version of the function, not yet to be exported */
         /* rcx = hFile, rdx = lDistanceToMove, r8 = lpDistanceToMoveHigh, 
@@ -172,7 +172,7 @@ DWORD SetFilePointerL(HANDLE hFile, LONG lDistanceToMove, \
         );
     }
 
-DWORD GetFileAttributes(LPCSTR lpFileName){
+DWORD PUBLIC GetFileAttributes(LPCSTR lpFileName){
     //If the function fails, we return -1. 
     //Call get last error to get the error code
     __asm__ __volatile__(
@@ -184,7 +184,7 @@ DWORD GetFileAttributes(LPCSTR lpFileName){
     );
 }
 
-DWORD SetFileAttributes(LPCSTR lpFileName, DWORD dwFileAttributes){
+DWORD PUBLIC SetFileAttributes(LPCSTR lpFileName, DWORD dwFileAttributes){
     __asm__ __volatile__(
         "xchg rdx, rcx\n\t"
         "mov eax, 0x4301\n\t"
@@ -197,7 +197,7 @@ DWORD SetFileAttributes(LPCSTR lpFileName, DWORD dwFileAttributes){
 // IOCTL FUNCTIONS HERE
 //
 
-BOOL DuplicateHandle(HANDLE hSourceHandle, LPHANDLE lpDestinationHandle){
+BOOL PUBLIC DuplicateHandle(HANDLE hSourceHandle, LPHANDLE lpDestinationHandle){
     __asm__ __volatile__(
         "push rbx\n\t"
         "mov ebx, ecx\n\t"
@@ -213,7 +213,7 @@ BOOL DuplicateHandle(HANDLE hSourceHandle, LPHANDLE lpDestinationHandle){
     );
 }
 
-BOOL ForceDuplicateHandle(HANDLE hSourceHandle, \
+BOOL PUBLIC ForceDuplicateHandle(HANDLE hSourceHandle, \
     HANDLE hDesiredDestinationHandle){
         //If this function returns true, the user can begin using 
         // hDesiredDestinationHandle as the DUP2 handle
@@ -230,7 +230,7 @@ BOOL ForceDuplicateHandle(HANDLE hSourceHandle, \
         );
 }
 
-BOOL GetCurrentDirectory(DRIVE_LETTER dlDriveLetter, LPSTR lpDirectoryBuffer){
+BOOL PUBLIC GetCurrentDirectory(DRIVE_LETTER dlDriveLetter, LPSTR lpDirectoryBuffer){
     //lpDirectoryBuffer must be a 68 byte buffer
     __asm__ __volatile__(
         "push rsi\n\t"
@@ -246,7 +246,7 @@ BOOL GetCurrentDirectory(DRIVE_LETTER dlDriveLetter, LPSTR lpDirectoryBuffer){
     );
 }
 
-BOOL __FindFirst(LPCSTR lpfileName, FILE_ATTRIBUTES dwFileAttributes){
+BOOL PRIVATE __FindFirst(LPCSTR lpfileName, FILE_ATTRIBUTES dwFileAttributes){
         __asm__ __volatile__(
         "xchg rcx, rdx\n\t"
         "and ecx, 0xFFFF\n\t"
@@ -261,7 +261,7 @@ BOOL __FindFirst(LPCSTR lpfileName, FILE_ATTRIBUTES dwFileAttributes){
 
 //Be aware that "no more files" is a special error condition. Make sure to
 // get the error code after this call!
-BOOL FindFirstFile(LPCSTR lpfileName, FILE_ATTRIBUTES dwFileAttributes, \
+BOOL PUBLIC FindFirstFile(LPCSTR lpfileName, FILE_ATTRIBUTES dwFileAttributes, \
     LPFFBlock lpFindFileBlock){
         LPVOID oldDTA = __getDTA();
         __setDTA(lpFindFileBlock);
@@ -270,7 +270,7 @@ BOOL FindFirstFile(LPCSTR lpfileName, FILE_ATTRIBUTES dwFileAttributes, \
         return retVal;
 }
 
-BOOL __FindNext(){
+BOOL PRIVATE __FindNext(){
     __asm__ __volatile__(
         "mov eax, 0x4F00\n\t"
         "xor ecx, ecx\n\t"
@@ -281,7 +281,7 @@ BOOL __FindNext(){
 }
 
 //Continues the search based on the FF Block returned in the DTA
-BOOL FindNextFile(LPFFBlock lpFindFileBlock){
+BOOL PUBLIC FindNextFile(LPFFBlock lpFindFileBlock){
         LPVOID oldDTA = __getDTA();
         __setDTA(lpFindFileBlock);
         BOOL retVal = __FindNext();
@@ -290,11 +290,11 @@ BOOL FindNextFile(LPFFBlock lpFindFileBlock){
 }
 
 //Closes the FindFirstBlock in the DTA. 
-BOOL FindClose(LPFFBlock lpFindFileBlock){
+BOOL PUBLIC FindClose(LPFFBlock lpFindFileBlock){
     return TRUE;
 }
 
-BOOL RenameFile(LPCSTR lpOldFileName, LPCSTR lpNewFileName){
+BOOL PUBLIC RenameFile(LPCSTR lpOldFileName, LPCSTR lpNewFileName){
     __asm__ __volatile__(
         "push rdi\n\t"
         "mov rdi, rdx\n\t"
@@ -308,7 +308,7 @@ BOOL RenameFile(LPCSTR lpOldFileName, LPCSTR lpNewFileName){
     );
 }
 
-BOOL GetFileDateAndTime(HANDLE hFile, LPFAT_TIME lpFileTime,\
+BOOL PUBLIC GetFileDateAndTime(HANDLE hFile, LPFAT_TIME lpFileTime,\
     LPFAT_DATE lpFileDate){
         __asm__ __volatile__(
             "push rbx\n\t"
@@ -325,7 +325,7 @@ BOOL GetFileDateAndTime(HANDLE hFile, LPFAT_TIME lpFileTime,\
             "getDateTimeExit:"
         );
     }
-BOOL SetFileDateAndTime(HANDLE hFile, FAT_TIME ftFileTime, FAT_DATE ftFileDate){
+BOOL PUBLIC SetFileDateAndTime(HANDLE hFile, FAT_TIME ftFileTime, FAT_DATE ftFileDate){
     __asm__ __volatile__ (
         "push rbx\n\t"
         "mov ebx, ecx\n\t"
@@ -341,7 +341,7 @@ BOOL SetFileDateAndTime(HANDLE hFile, FAT_TIME ftFileTime, FAT_DATE ftFileDate){
 
 //ASCIIZ Path must be at least 67 chars long and ending in a terminating slash
 //If the handle is -1, error occured
-HANDLE CreateTemporaryFile(LPSTR lpFileNameBuffer, \
+HANDLE PUBLIC CreateTemporaryFile(LPSTR lpFileNameBuffer, \
     FILE_ATTRIBUTES dwFileAttributes){
         __asm__ __volatile__ (
             "xchg rdx, rcx\n\t"
@@ -352,7 +352,7 @@ HANDLE CreateTemporaryFile(LPSTR lpFileNameBuffer, \
         );
 };
 
-HANDLE CreateUniqueFile(LPCSTR lpFileName, FILE_ATTRIBUTES dwFileAttributes){
+HANDLE PUBLIC CreateUniqueFile(LPCSTR lpFileName, FILE_ATTRIBUTES dwFileAttributes){
     __asm__ __volatile__ (
     "xchg rdx, rcx\n\t"
     "mov eax, 0x3C00\n\t"
@@ -363,7 +363,7 @@ HANDLE CreateUniqueFile(LPCSTR lpFileName, FILE_ATTRIBUTES dwFileAttributes){
 }
 
 //Buffer MUST be at least 128 bytes!!!
-BOOL GetFileTrueName(LPCSTR lpFileNameToQualify, LPSTR lpBufferForFileName){
+BOOL PUBLIC GetFileTrueName(LPCSTR lpFileNameToQualify, LPSTR lpBufferForFileName){
     __asm__ __volatile__ (
         "push rsi\n\t"
         "push rdi\n\t"
@@ -377,7 +377,7 @@ BOOL GetFileTrueName(LPCSTR lpFileNameToQualify, LPSTR lpBufferForFileName){
     );
 }
 
-BOOL FlushFile(HANDLE hFile){
+BOOL PUBLIC FlushFile(HANDLE hFile){
     __asm__ __volatile__(
         "push rbx\n\t"
         "mov ebx, ecx\n\t"

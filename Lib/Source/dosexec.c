@@ -2,7 +2,7 @@
 #include "../../Headers/scpdos.h"
 
 //If this returns True, you can get the task return code
-BOOL ExecProcess(LPCSTR lpProcessName, LPEPB lpExecuteParameterBlock){
+BOOL PUBLIC ExecProcess(LPCSTR lpProcessName, LPEPB lpExecuteParameterBlock){
     __asm__ __volatile(
         "push rbx\n\t"
         "mov rbx, rdx\n\t"
@@ -17,7 +17,7 @@ BOOL ExecProcess(LPCSTR lpProcessName, LPEPB lpExecuteParameterBlock){
 };
 
 //Loads a program for execution but doesnt actually execute it
-BOOL LoadProcess(LPCSTR lpProcessName, LPLPB lpLoadParameterBlock){
+BOOL PUBLIC LoadProcess(LPCSTR lpProcessName, LPLPB lpLoadParameterBlock){
     __asm__ __volatile(
         "push rbx\n\t"
         "mov rbx, rdx\n\t"
@@ -32,7 +32,7 @@ BOOL LoadProcess(LPCSTR lpProcessName, LPLPB lpLoadParameterBlock){
 };
 
 //Called by a task to load a program overlay in the tasks memory space
-BOOL LoadOverlay(LPCSTR lpOverlayName, LPLOB lpLoadOverlayBlock){
+BOOL PUBLIC LoadOverlay(LPCSTR lpOverlayName, LPLOB lpLoadOverlayBlock){
     __asm__ __volatile(
         "push rbx\n\t"
         "mov rbx, rdx\n\t"
@@ -46,7 +46,7 @@ BOOL LoadOverlay(LPCSTR lpOverlayName, LPLOB lpLoadOverlayBlock){
     );
 };
 
-VOID ExitProcess(BYTE bExitCode){
+VOID PUBLIC ExitProcess(BYTE bExitCode){
     __asm__ __volatile__ (
         "mov eax, 0x4C00\n\t"
         "mov al, cl\n\t"
@@ -54,7 +54,7 @@ VOID ExitProcess(BYTE bExitCode){
     );
 }
 
-VOID ExitProcessAndStayResidentP(BYTE bExitCode, DWORD dwParagraphsToReserve){
+VOID PUBLIC ExitProcessAndStayResidentP(BYTE bExitCode, DWORD dwParagraphsToReserve){
     __asm__ __volatile__(
         "mov eax, 0x3100\n\t"
         "mov al, cl\n\t"
@@ -62,7 +62,7 @@ VOID ExitProcessAndStayResidentP(BYTE bExitCode, DWORD dwParagraphsToReserve){
     );
 }
 
-VOID ExitProcessAndStayResidentB(DWORD dwBytesToReserve){
+VOID PUBLIC ExitProcessAndStayResidentB(DWORD dwBytesToReserve){
     __asm__ __volatile__(
         "mov edx, ecx\n\t"
         "int 0x47"
@@ -71,7 +71,7 @@ VOID ExitProcessAndStayResidentB(DWORD dwBytesToReserve){
 
 
 //Gets the return value of the process that last terminated
-RETURN_CODE GetExitCodeProcess(){
+RETURN_CODE PUBLIC GetExitCodeProcess(){
     __asm__ __volatile__ (
         "mov eax, 0x4D00\n\t"
         "int 0x41\n\t"

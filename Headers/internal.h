@@ -35,11 +35,11 @@ typedef struct _drive_parameter_block{
 
 
 #endif
-BOOL GetDefaultDiskDPBPointer(LPDPB lpDPB);
-BOOL GetDPBPointer(DRIVE_NUMBER bNumber, LPDPB lpDPB);
-VOID SetCurrentProcessId(PROCESS_ID pid);
-PROCESS_ID GetCurrentProcessId();
-LPVOID GetPointerToDosSysVars();
-VOID GenerateDPB(LPVOID lpBPB, LPDPB lpDPB);
-VOID GeneratePartialPSP(LPVOID lpPSPAddress);
-VOID GenerateNewPSP(LPVOID lpPSPAddress, DWORD dwSizeOfPSPAllocation);
+BOOL PUBLIC GetDefaultDiskDPBPointer(LPDPB lpDPB);
+BOOL PUBLIC GetDPBPointer(DRIVE_NUMBER bNumber, LPDPB lpDPB);
+VOID PUBLIC SetCurrentProcessId(PROCESS_ID pid);
+PROCESS_ID PUBLIC GetCurrentProcessId();
+LPVOID PUBLIC GetPointerToDosSysVars();
+VOID PUBLIC GenerateDPB(LPVOID lpBPB, LPDPB lpDPB);
+VOID PUBLIC GeneratePartialPSP(LPVOID lpPSPAddress);
+VOID PUBLIC GenerateNewPSP(LPVOID lpPSPAddress, DWORD dwSizeOfPSPAllocation);

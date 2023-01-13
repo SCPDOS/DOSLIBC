@@ -4,7 +4,7 @@
 //One for just the ext error code and the other for full info.
 
 //Uses r10 for wExtErrorCode 
-VOID __getErrorInformation(LPWORD lpExtErrorCode, LPBYTE lpErrorClass,\
+VOID PRIVATE __getErrorInformation(LPWORD lpExtErrorCode, LPBYTE lpErrorClass,\
     LPBYTE lpErrorAction, LPBYTE lpErrorLocus){
         __asm__ __volatile__(
             "push rbx\n\t"
@@ -22,7 +22,7 @@ VOID __getErrorInformation(LPWORD lpExtErrorCode, LPBYTE lpErrorClass,\
         );
     }
 
-VOID GetExtendedLastError(LPEXT_ERROR lpExtendedError){
+VOID PUBLIC GetExtendedLastError(LPEXT_ERROR lpExtendedError){
     LPWORD extErr = &(lpExtendedError->wExtendedError);
     LPBYTE class = &(lpExtendedError->bErrorClass);
     LPBYTE action = &(lpExtendedError->bSuggestedAction);
@@ -31,7 +31,7 @@ VOID GetExtendedLastError(LPEXT_ERROR lpExtendedError){
 
 }
 
-WORD GetLastError(){
+WORD PUBLIC GetLastError(){
     WORD extErr = 0;
     BYTE nulVar = 0; //A dumping ground for the info to lose
     __getErrorInformation(&extErr, &nulVar, &nulVar, &nulVar);

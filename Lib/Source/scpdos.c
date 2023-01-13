@@ -8,7 +8,7 @@
 #include "doscon.c"
 #include "dosnet.c"
 
-VOID SetInterruptVector(DWORD dwInterruptVector, LPVOID lpInterruptHandler){
+VOID PUBLIC SetInterruptVector(DWORD dwInterruptVector, LPVOID lpInterruptHandler){
     __asm__ __volatile__(
         "movzx eax, cl\n\t"
         "mov ah, 0x25\n\t"
@@ -16,7 +16,7 @@ VOID SetInterruptVector(DWORD dwInterruptVector, LPVOID lpInterruptHandler){
     );
 }
 
-LPVOID GetInterruptVector(DWORD dwInterruptVector){
+LPVOID PUBLIC GetInterruptVector(DWORD dwInterruptVector){
     __asm__ __volatile__(
         "push rbx\n\t"
         "movzx eax, cl\n\t"

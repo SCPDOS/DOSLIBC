@@ -1,7 +1,7 @@
 #include "../../Headers/scpdos.h"
 
 //Internal common Allocation function
-LPVOID __AllocateMemory(SIZE_T dwNumberOfParagraphs){
+LPVOID PRIVATE __AllocateMemory(SIZE_T dwNumberOfParagraphs){
         __asm__ __volatile__(
         "push rbx\n\t"
         "mov ebx, ecx\n\t"
@@ -13,7 +13,7 @@ LPVOID __AllocateMemory(SIZE_T dwNumberOfParagraphs){
     );
 }
 
-BOOL __FreeMemory(LPVOID lpAddress){
+BOOL PRIVATE __FreeMemory(LPVOID lpAddress){
     __asm__ __volatile__(
         "mov r8, rcx\n\t"
         "mov eax, 0x4900\n\t"
@@ -24,7 +24,7 @@ BOOL __FreeMemory(LPVOID lpAddress){
     );
 }
 
-BOOL __ReallocateMemory(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs){
+BOOL PRIVATE __ReallocateMemory(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs){
     __asm__ __volatile__(
         "push rbx\n\t"
         "mov r8, rcx\n\t"
@@ -39,35 +39,35 @@ BOOL __ReallocateMemory(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs){
 
 //Pass the number of paragraphs to allocate in dwSize
 //Returns a NULL pointer if fails
-LPVOID VirtualAllocate(SIZE_T dwNumberOfParagraphs){
+LPVOID PUBLIC VirtualAllocate(SIZE_T dwNumberOfParagraphs){
     return __AllocateMemory(dwNumberOfParagraphs);
 }
 
-BOOL VirtualFree(LPVOID lpAddress){
+BOOL PUBLIC VirtualFree(LPVOID lpAddress){
     return __FreeMemory(lpAddress);
 }
 
-BOOL VirtualReallocate(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs){
+BOOL PUBLIC VirtualReallocate(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs){
     return __ReallocateMemory(lpAddress, dwNumberOfParagraphs);
 }
 
 //Undocumented but exposed function for now.
-LPVOID PhysicalAllocate(SIZE_T dwNumberOfParagraphs){
+LPVOID PUBLIC PhysicalAllocate(SIZE_T dwNumberOfParagraphs){
     return __AllocateMemory(dwNumberOfParagraphs);
 }
 
 //Undocumented but exposed function for now.
-BOOL PhysicalFree(LPVOID lpAddress){
+BOOL PUBLIC PhysicalFree(LPVOID lpAddress){
     return __FreeMemory(lpAddress);
 }
 
 //Undocumented but exposed function for now.
-BOOL PhysicalReallocate(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs){
+BOOL PUBLIC PhysicalReallocate(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs){
     return __ReallocateMemory(lpAddress, dwNumberOfParagraphs);
 }
 
 //If this function returns -1, memory chain error detected
-BYTE GetMemoryAllocationStrategy(){
+BYTE PUBLIC GetMemoryAllocationStrategy(){
     __asm__ __volatile__(
         "mov eax, 0x5800\n\t"
         "int 0x41\n\t"
@@ -75,7 +75,7 @@ BYTE GetMemoryAllocationStrategy(){
 }
 
 //If this function returns FALSE, memory chain error detected
-BOOL SetMemoryAllocationStrategy(BYTE bAllocationStrategy){
+BOOL PUBLIC SetMemoryAllocationStrategy(BYTE bAllocationStrategy){
     __asm__ __volatile__(
         "push rbx\n\t"
         "mov ebx, ecx\n\t"

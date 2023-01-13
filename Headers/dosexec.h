@@ -1,4 +1,5 @@
 #include "basetsd.h"
+#include "dosfcb.h"
 
 #ifndef DOSEXEC_H
 #define DOSEXEC_H
@@ -64,10 +65,10 @@ typedef struct _load_overlay_block {
 
 #endif
 
-VOID ExitProcessAndStayResidentB(DWORD dwBytesToReserve);
-VOID ExitProcessAndStayResidentP(BYTE bExitCode, DWORD dwParagraphsToReserve);
-BOOL ExecProcess(LPCSTR lpProcessName, LPEPB lpExecuteParameterBlock);
-BOOL LoadProcess(LPCSTR lpProcessName, LPLPB lpLoadParameterBlock);
-BOOL LoadOverlay(LPCSTR lpOverlayName, LPLOB lpLoadOverlayBlock);
-VOID ExitProcess(BYTE bExitCode);
-RETURN_CODE GetExitCodeProcess();
+VOID PUBLIC ExitProcessAndStayResidentB(DWORD dwBytesToReserve);
+VOID PUBLIC ExitProcessAndStayResidentP(BYTE bExitCode, DWORD dwParagraphsToReserve);
+BOOL PUBLIC ExecProcess(LPCSTR lpProcessName, LPEPB lpExecuteParameterBlock);
+BOOL PUBLIC LoadProcess(LPCSTR lpProcessName, LPLPB lpLoadParameterBlock);
+BOOL PUBLIC LoadOverlay(LPCSTR lpOverlayName, LPLOB lpLoadOverlayBlock);
+VOID PUBLIC ExitProcess(BYTE bExitCode);
+RETURN_CODE PUBLIC GetExitCodeProcess();

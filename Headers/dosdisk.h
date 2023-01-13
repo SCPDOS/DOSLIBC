@@ -23,18 +23,13 @@ typedef struct _fat_date{
 
 #endif
 
-VOID DiskReset();
-VOID SetDefaultDrive(DRIVE_INDEX bDiskIndex);
-DRIVE_INDEX GetDefaultDrive();
-BOOL GetDiskFATInfo(DRIVE_NUMBER bDriveNumber, LPDWORD lpBytesPerSector, \
-    LPDWORD lpSectorsPerCluster, LPDWORD lpTotalNumberOfClusters, \
-    LPVOID *lpMediaDescriptor);
-BOOL GetDefaultDiskFATInfo(LPDWORD lpBytesPerSector, \
-    LPDWORD lpSectorsPerCluster, LPDWORD lpTotalNumberOfClusters, \
-    LPVOID *lpMediaDescriptor);
-BOOL GetDiskFreeSpace(DRIVE_NUMBER bDriveNumber, LPDWORD lpSectorsPerCluster, \
-    LPDWORD lpBytesPerSector, LPDWORD lpNumberOfFreeClusters, \
-    LPDWORD lpTotalNumberOfFreeClusters);
-
-
-BYTE GetDiskReadVerifyFlag();
+VOID PUBLIC DiskReset();
+VOID PUBLIC SetDefaultDrive(DRIVE_INDEX bDiskIndex);
+DRIVE_INDEX PUBLIC GetDefaultDrive();
+BOOL PUBLIC GetDiskFATInfo(DRIVE_NUMBER bDriveNumber, LPDWORD lpBytesPerSector, \
+    LPDWORD lpSectorsPerCluster, LPDWORD lpTotalNumberOfClusters, LPVOID *lpMediaDescriptor);
+BOOL PUBLIC GetDefaultDiskFATInfo(LPDWORD lpBytesPerSector, \
+    LPDWORD lpSectorsPerCluster, LPDWORD lpTotalNumberOfClusters, LPVOID *lpMediaDescriptor);
+BOOL PUBLIC GetDiskFreeSpace(DRIVE_NUMBER bDriveNumber, LPDWORD lpSectorsPerCluster, \
+    LPDWORD lpBytesPerSector, LPDWORD lpNumberOfFreeClusters, LPDWORD lpTotalNumberOfFreeClusters);
+BYTE PUBLIC GetDiskReadVerifyFlag();

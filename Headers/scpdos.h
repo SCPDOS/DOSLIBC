@@ -21,5 +21,5 @@
 
 #endif
 
-VOID SetInterruptVector(DWORD dwInterruptVector, LPVOID lpInterruptHandler);
-LPVOID GetInterruptVector(DWORD dwInterruptVector);
+VOID PUBLIC SetInterruptVector(DWORD dwInterruptVector, LPVOID lpInterruptHandler);
+LPVOID PUBLIC GetInterruptVector(DWORD dwInterruptVector);
