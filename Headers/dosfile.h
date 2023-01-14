@@ -76,6 +76,10 @@ typedef DWORD FILE_SHARE_MODE, *PFILE_SHARE_MODE, *LPFILE_SHARE_MODE;
 #define OPEN_INHERIT            0x80
 #endif
 
+#ifndef SHARE_COMPAT
+#define SHARE_COMPAT            0x00
+#endif
+
 #ifndef SHARE_DENY_READ_WRITE
 #define SHARE_DENY_READ_WRITE   0x10
 #endif
@@ -127,6 +131,7 @@ BOOL WINAPI ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, 
 BOOL WINAPI WriteFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, LPDWORD lpNumberOfBytesWritten);
 BOOL WINAPI DeleteFile(LPCSTR lpFileName);
 DWORD WINAPI SetFilePointer(HANDLE hFile, LONG lDistanceToMove, DWORD dwMoveMethod);
+DWORD WINAPI SetFilePointerL(HANDLE hFile, LONG lDistanceToMove, PLONG lpDistanceToMoveHigh, DWORD dwMoveMethod);
 DWORD WINAPI GetFileAttributes(LPCSTR lpFileName);
 DWORD WINAPI SetFileAttributes(LPCSTR lpFileName, DWORD dwFileAttributes);
 BOOL WINAPI DuplicateHandle(HANDLE hSourceHandle, LPHANDLE lpDestinationHandle);

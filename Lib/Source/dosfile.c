@@ -155,7 +155,7 @@ DWORD WINAPI SetFilePointer(HANDLE hFile, LONG lDistanceToMove, DWORD dwMoveMeth
 
 DWORD WINAPI SetFilePointerL(HANDLE hFile, LONG lDistanceToMove, \
     PLONG lpDistanceToMoveHigh, DWORD dwMoveMethod){
-        /* This is the 64 bit version of the function, not yet to be exported */
+        /* This is the 64 bit version of the function, not yet to be documented */
         /* rcx = hFile, rdx = lDistanceToMove, r8 = lpDistanceToMoveHigh, 
             r9 = 0, 1, 2 */
         /* If r8=NULL then ignore this*/
