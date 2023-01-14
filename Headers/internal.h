@@ -1,8 +1,8 @@
 // This is a file used for specifying DOS internal data structures and 
 // prototypes for special functions such as 41h/AH=52h etc.
 
-#ifndef INTERNAL_H
-#define INTERNAL_H
+#ifndef _INTERNAL_H
+#define _INTERNAL_H
 
 #include "basetsd.h"
 #include "dosdisk.h"
@@ -34,12 +34,15 @@ typedef struct _drive_parameter_block{
 } DPB, *PDPB, *LPDPB;
 
 
+BOOL WINAPI GetDefaultDiskDPBPointer(LPDPB lpDPB);
+BOOL WINAPI GetDPBPointer(DRIVE_NUMBER bNumber, LPDPB lpDPB);
+VOID WINAPI SetCurrentProcessId(PROCESS_ID pid);
+PROCESS_ID WINAPI GetCurrentProcessId();
+LPVOID WINAPI GetPointerToDosSysVars();
+VOID WINAPI GenerateDPB(LPVOID lpBPB, LPDPB lpDPB);
+VOID WINAPI GeneratePartialPSP(LPVOID lpPSPAddress);
+VOID WINAPI GenerateNewPSP(LPVOID lpPSPAddress, DWORD dwSizeOfPSPAllocation);
+LPCH WINAPI GetPtrToInDOSFlag();
+VOID GetSwitchChar(LPCH lpSwitchChar);
+VOID SetSwitchChar(CHAR switchChar);
 #endif
-BOOL PUBLIC GetDefaultDiskDPBPointer(LPDPB lpDPB);
-BOOL PUBLIC GetDPBPointer(DRIVE_NUMBER bNumber, LPDPB lpDPB);
-VOID PUBLIC SetCurrentProcessId(PROCESS_ID pid);
-PROCESS_ID PUBLIC GetCurrentProcessId();
-LPVOID PUBLIC GetPointerToDosSysVars();
-VOID PUBLIC GenerateDPB(LPVOID lpBPB, LPDPB lpDPB);
-VOID PUBLIC GeneratePartialPSP(LPVOID lpPSPAddress);
-VOID PUBLIC GenerateNewPSP(LPVOID lpPSPAddress, DWORD dwSizeOfPSPAllocation);

@@ -1,5 +1,5 @@
-#ifndef DOSDISK_H
-#define DOSDISK_H
+#ifndef _DOSDISK_H
+#define _DOSDISK_H
 #include "basetsd.h"
 
 //An ASCII Char in the range A-Z inclusive
@@ -21,15 +21,20 @@ typedef struct _fat_date{
     BYTE year   : 7;    //Number of years minus 1980
 } FAT_DATE, *PFAT_DATE, *LPFAT_DATE;
 
-#endif
+#define SKIP_LEADING_SEPARATORS 0x01
+#define MODIFY_DRIVE_NUMBER     0x02    //Only if specified in the FCB
+#define MODIFY_FILENAME         0x04    //Modify the filename if specified
+#define MODIFY_EXT              0x08    //Modify the extension if specified
 
-VOID PUBLIC DiskReset();
-VOID PUBLIC SetDefaultDrive(DRIVE_INDEX bDiskIndex);
-DRIVE_INDEX PUBLIC GetDefaultDrive();
-BOOL PUBLIC GetDiskFATInfo(DRIVE_NUMBER bDriveNumber, LPDWORD lpBytesPerSector, \
+VOID WINAPI DiskReset();
+VOID WINAPI SetDefaultDrive(DRIVE_INDEX bDiskIndex);
+DRIVE_INDEX WINAPI GetDefaultDrive();
+BOOL WINAPI GetDiskFATInfo(DRIVE_NUMBER bDriveNumber, LPDWORD lpBytesPerSector, \
     LPDWORD lpSectorsPerCluster, LPDWORD lpTotalNumberOfClusters, LPVOID *lpMediaDescriptor);
-BOOL PUBLIC GetDefaultDiskFATInfo(LPDWORD lpBytesPerSector, \
+BOOL WINAPI GetDefaultDiskFATInfo(LPDWORD lpBytesPerSector, \
     LPDWORD lpSectorsPerCluster, LPDWORD lpTotalNumberOfClusters, LPVOID *lpMediaDescriptor);
-BOOL PUBLIC GetDiskFreeSpace(DRIVE_NUMBER bDriveNumber, LPDWORD lpSectorsPerCluster, \
+BOOL WINAPI GetDiskFreeSpace(DRIVE_NUMBER bDriveNumber, LPDWORD lpSectorsPerCluster, \
     LPDWORD lpBytesPerSector, LPDWORD lpNumberOfFreeClusters, LPDWORD lpTotalNumberOfFreeClusters);
-BYTE PUBLIC GetDiskReadVerifyFlag();
+BYTE WINAPI GetDiskReadVerifyFlag();
+
+#endif

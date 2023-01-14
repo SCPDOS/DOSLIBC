@@ -1,8 +1,8 @@
 #include "basetsd.h"
 #include "dosfcb.h"
 
-#ifndef DOSEXEC_H
-#define DOSEXEC_H
+#ifndef _DOSEXEC_H
+#define _DOSEXEC_H
 
 typedef BYTE EXIT_CODE, *PEXIT_CODE, *LPEXIT_CODE;
 
@@ -63,12 +63,13 @@ typedef struct _load_overlay_block {
     DWORD dwRelocationFactor;
 } LOB, *PLOB, *LPLOB;
 
-#endif
 
-VOID PUBLIC ExitProcessAndStayResidentB(DWORD dwBytesToReserve);
-VOID PUBLIC ExitProcessAndStayResidentP(BYTE bExitCode, DWORD dwParagraphsToReserve);
-BOOL PUBLIC ExecProcess(LPCSTR lpProcessName, LPEPB lpExecuteParameterBlock);
-BOOL PUBLIC LoadProcess(LPCSTR lpProcessName, LPLPB lpLoadParameterBlock);
-BOOL PUBLIC LoadOverlay(LPCSTR lpOverlayName, LPLOB lpLoadOverlayBlock);
-VOID PUBLIC ExitProcess(BYTE bExitCode);
-RETURN_CODE PUBLIC GetExitCodeProcess();
+VOID WINAPI ExitProcessAndStayResidentB(DWORD dwBytesToReserve);
+VOID WINAPI ExitProcessAndStayResidentP(BYTE bExitCode, DWORD dwParagraphsToReserve);
+BOOL WINAPI ExecProcess(LPCSTR lpProcessName, LPEPB lpExecuteParameterBlock);
+BOOL WINAPI LoadProcess(LPCSTR lpProcessName, LPLPB lpLoadParameterBlock);
+BOOL WINAPI LoadOverlay(LPCSTR lpOverlayName, LPLOB lpLoadOverlayBlock);
+VOID WINAPI ExitProcess(BYTE bExitCode);
+RETURN_CODE WINAPI GetExitCodeProcess();
+
+#endif

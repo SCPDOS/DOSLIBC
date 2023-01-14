@@ -2,8 +2,8 @@
 // Basic type definitions
 //
 
-#ifndef BASETSD_H
-#define BASETSD_H
+#ifndef _BASETSD_H
+#define _BASETSD_H
 
 #ifdef PUBLIC 
 #undef PUBLIC
@@ -17,15 +17,25 @@
 #undef COMPILER
 #endif
 
-#if defined(_MSC_VER)
-#define PUBLIC __fastcall
-#define PRIVATE __fastcall
-#define COMPILER "MSVC"
-#elif defined(__GNUC__)
-#define PUBLIC __attribute__ ((msvc))
-#define PRIVATE __attribute__ ((msvc))
-#define COMPILER "GCC"
+#ifdef CC_MSVC
+#undef CC_MSVC
+#define CC_MSVC 1
 #endif
+
+#ifdef CC_GCC
+#undef CC_GCC
+#define CC_GCC 2
+#endif
+
+#if defined(_MSC_VER)
+#define WINAPI __fastcall
+#define COMPILER CC_MSVC
+#elif defined(__GNUC__)
+#define WINAPI __attribute__((ms_abi))
+#define COMPILER CC_GCC
+#endif
+
+#define ASM __asm__ __volatile__
 
 #ifndef VOID
 #define VOID void

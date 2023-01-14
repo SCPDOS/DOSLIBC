@@ -3,8 +3,8 @@
 #include "basetsd.h"
 #include "dosdisk.h"
 
-#ifndef DOSFILE_H
-#define DOSFILE_H
+#ifndef _DOSFILE_H
+#define _DOSFILE_H
 
 #ifndef STDIN
 #define STDIN 0x00
@@ -117,27 +117,28 @@ typedef struct _find_first_block{
     CONST CHAR fileName[13];
 } FFBlock, *PFFBlock, *LPFFBlock;
 
+BOOL WINAPI CreateDirectory(LPCSTR lpDirectoryName);
+BOOL WINAPI DeleteDirectory(LPCSTR lpDirectoryName);
+BOOL WINAPI ChangeCurrentDirectory(LPCSTR lpDirectoryName);
+HANDLE WINAPI CreateFile(LPCSTR lpFileName, FILE_ATTRIBUTES dwFileAttributes);
+HANDLE WINAPI OpenFile(LPCSTR lpFileName, FILE_OPEN_MODE dwOpenMode, FILE_SHARE_MODE dwShareMode);
+BOOL WINAPI CloseFile(HANDLE hFile);
+BOOL WINAPI ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead,  LPDWORD lpNumberOfBytesRead);
+BOOL WINAPI WriteFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, LPDWORD lpNumberOfBytesWritten);
+BOOL WINAPI DeleteFile(LPCSTR lpFileName);
+DWORD WINAPI SetFilePointer(HANDLE hFile, LONG lDistanceToMove, DWORD dwMoveMethod);
+DWORD WINAPI GetFileAttributes(LPCSTR lpFileName);
+DWORD WINAPI SetFileAttributes(LPCSTR lpFileName, DWORD dwFileAttributes);
+BOOL WINAPI DuplicateHandle(HANDLE hSourceHandle, LPHANDLE lpDestinationHandle);
+BOOL WINAPI ForceDuplicateHandle(HANDLE hSourceHandle, HANDLE hDesiredDestinationHandle);
+BOOL WINAPI GetCurrentDirectory(DRIVE_LETTER dlDriveLetter, LPSTR lpDirectoryBuffer);
+BOOL WINAPI FindFirstFile(LPCSTR lpfileName, FILE_ATTRIBUTES dwFileAttributes, LPFFBlock lpFindFileBlock);
+BOOL WINAPI FindNextFile(LPFFBlock lpFindFileBlock);
+BOOL WINAPI FindClose(LPFFBlock lpFindFileBlock);
+BOOL WINAPI RenameFile(LPCSTR lpOldFileName, LPCSTR lpNewFileName);
+HANDLE WINAPI CreateTemporaryFile(LPSTR lpFileNameBuffer, FILE_ATTRIBUTES dwFileAttributes);
+HANDLE WINAPI CreateUniqueFile(LPCSTR lpFileName, FILE_ATTRIBUTES dwFileAttributes);
+BOOL WINAPI GetFileTrueName(LPCSTR lpFileNameToQualify, LPSTR lpBufferForFileName);
+BOOL WINAPI FlushFile(HANDLE hFile);
+
 #endif
-BOOL PUBLIC CreateDirectory(LPCSTR lpDirectoryName);
-BOOL PUBLIC DeleteDirectory(LPCSTR lpDirectoryName);
-BOOL PUBLIC ChangeCurrentDirectory(LPCSTR lpDirectoryName);
-HANDLE PUBLIC CreateFile(LPCSTR lpFileName, FILE_ATTRIBUTES dwFileAttributes);
-HANDLE PUBLIC OpenFile(LPCSTR lpFileName, FILE_OPEN_MODE dwOpenMode, FILE_SHARE_MODE dwShareMode);
-BOOL PUBLIC CloseFile(HANDLE hFile);
-BOOL PUBLIC ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead,  LPDWORD lpNumberOfBytesRead);
-BOOL PUBLIC WriteFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToWrite, LPDWORD lpNumberOfBytesWritten);
-BOOL PUBLIC DeleteFile(LPCSTR lpFileName);
-DWORD PUBLIC SetFilePointer(HANDLE hFile, LONG lDistanceToMove, DWORD dwMoveMethod);
-DWORD PUBLIC GetFileAttributes(LPCSTR lpFileName);
-DWORD PUBLIC SetFileAttributes(LPCSTR lpFileName, DWORD dwFileAttributes);
-BOOL PUBLIC DuplicateHandle(HANDLE hSourceHandle, LPHANDLE lpDestinationHandle);
-BOOL PUBLIC ForceDuplicateHandle(HANDLE hSourceHandle, HANDLE hDesiredDestinationHandle);
-BOOL PUBLIC GetCurrentDirectory(DRIVE_LETTER dlDriveLetter, LPSTR lpDirectoryBuffer);
-BOOL PUBLIC FindFirstFile(LPCSTR lpfileName, FILE_ATTRIBUTES dwFileAttributes, LPFFBlock lpFindFileBlock);
-BOOL PUBLIC FindNextFile(LPFFBlock lpFindFileBlock);
-BOOL PUBLIC FindClose(LPFFBlock lpFindFileBlock);
-BOOL PUBLIC RenameFile(LPCSTR lpOldFileName, LPCSTR lpNewFileName);
-HANDLE PUBLIC CreateTemporaryFile(LPSTR lpFileNameBuffer, FILE_ATTRIBUTES dwFileAttributes);
-HANDLE PUBLIC CreateUniqueFile(LPCSTR lpFileName, FILE_ATTRIBUTES dwFileAttributes);
-BOOL PUBLIC GetFileTrueName(LPCSTR lpFileNameToQualify, LPSTR lpBufferForFileName);
-BOOL PUBLIC FlushFile(HANDLE hFile);

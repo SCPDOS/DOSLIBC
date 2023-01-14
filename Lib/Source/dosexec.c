@@ -2,7 +2,7 @@
 #include "../../Headers/scpdos.h"
 
 //If this returns True, you can get the task return code
-BOOL PUBLIC ExecProcess(LPCSTR lpProcessName, LPEPB lpExecuteParameterBlock){
+BOOL WINAPI ExecProcess(LPCSTR lpProcessName, LPEPB lpExecuteParameterBlock){
     __asm__ __volatile(
         "push rbx\n\t"
         "mov rbx, rdx\n\t"
@@ -17,7 +17,7 @@ BOOL PUBLIC ExecProcess(LPCSTR lpProcessName, LPEPB lpExecuteParameterBlock){
 };
 
 //Loads a program for execution but doesnt actually execute it
-BOOL PUBLIC LoadProcess(LPCSTR lpProcessName, LPLPB lpLoadParameterBlock){
+BOOL WINAPI LoadProcess(LPCSTR lpProcessName, LPLPB lpLoadParameterBlock){
     __asm__ __volatile(
         "push rbx\n\t"
         "mov rbx, rdx\n\t"
@@ -32,7 +32,7 @@ BOOL PUBLIC LoadProcess(LPCSTR lpProcessName, LPLPB lpLoadParameterBlock){
 };
 
 //Called by a task to load a program overlay in the tasks memory space
-BOOL PUBLIC LoadOverlay(LPCSTR lpOverlayName, LPLOB lpLoadOverlayBlock){
+BOOL WINAPI LoadOverlay(LPCSTR lpOverlayName, LPLOB lpLoadOverlayBlock){
     __asm__ __volatile(
         "push rbx\n\t"
         "mov rbx, rdx\n\t"
@@ -46,24 +46,24 @@ BOOL PUBLIC LoadOverlay(LPCSTR lpOverlayName, LPLOB lpLoadOverlayBlock){
     );
 };
 
-VOID PUBLIC ExitProcess(BYTE bExitCode){
-    __asm__ __volatile__ (
+VOID WINAPI ExitProcess(BYTE bExitCode){
+    ASM (
         "mov eax, 0x4C00\n\t"
         "mov al, cl\n\t"
         "int 0x41"
     );
 }
 
-VOID PUBLIC ExitProcessAndStayResidentP(BYTE bExitCode, DWORD dwParagraphsToReserve){
-    __asm__ __volatile__(
+VOID WINAPI ExitProcessAndStayResidentP(BYTE bExitCode, DWORD dwParagraphsToReserve){
+    ASM(
         "mov eax, 0x3100\n\t"
         "mov al, cl\n\t"
         "int 0x41\n\t"
     );
 }
 
-VOID PUBLIC ExitProcessAndStayResidentB(DWORD dwBytesToReserve){
-    __asm__ __volatile__(
+VOID WINAPI ExitProcessAndStayResidentB(DWORD dwBytesToReserve){
+    ASM(
         "mov edx, ecx\n\t"
         "int 0x47"
     );
@@ -71,8 +71,8 @@ VOID PUBLIC ExitProcessAndStayResidentB(DWORD dwBytesToReserve){
 
 
 //Gets the return value of the process that last terminated
-RETURN_CODE PUBLIC GetExitCodeProcess(){
-    __asm__ __volatile__ (
+RETURN_CODE WINAPI GetExitCodeProcess(){
+    ASM (
         "mov eax, 0x4D00\n\t"
         "int 0x41\n\t"
     );   

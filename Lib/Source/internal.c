@@ -1,7 +1,7 @@
 #include "../../Headers/scpdos.h"
 
-BOOL PUBLIC GetDefaultDiskDPBPointer(LPDPB lpDPB){
-    __asm__ __volatile__(
+BOOL WINAPI GetDefaultDiskDPBPointer(LPDPB lpDPB){
+    ASM(
         "push rbx\n\t"
         "mov eax, 0x1F00\n\t"
         "int 0x41\n\t"
@@ -14,8 +14,8 @@ BOOL PUBLIC GetDefaultDiskDPBPointer(LPDPB lpDPB){
     );
 }
 
-BOOL PUBLIC GetDPBPointer(DRIVE_NUMBER bNumber, LPDPB lpDPB){
-    __asm__ __volatile__(
+BOOL WINAPI GetDPBPointer(DRIVE_NUMBER bNumber, LPDPB lpDPB){
+    ASM(
         "push rbx\n\t"
         "mov r8, rdx\n\t"
         "mov dl, cl\n\t"
@@ -33,8 +33,8 @@ BOOL PUBLIC GetDPBPointer(DRIVE_NUMBER bNumber, LPDPB lpDPB){
     );
 }
 
-VOID PUBLIC SetCurrentProcessId(PROCESS_ID pid){
-    __asm__ __volatile__(
+VOID WINAPI SetCurrentProcessId(PROCESS_ID pid){
+    ASM(
         "push rbx\n\t"
         "mov rbx, rcx\n\t"
         "mov eax, 0x5000\n\t"
@@ -42,8 +42,8 @@ VOID PUBLIC SetCurrentProcessId(PROCESS_ID pid){
     );
 }
 
-PROCESS_ID PUBLIC GetCurrentProcessId(){
-    __asm__ __volatile__(
+PROCESS_ID WINAPI GetCurrentProcessId(){
+    ASM(
         "push rbx\n\t"
         "mov eax, 0x5100\n\t"
         "int 0x41\n\t"
@@ -52,7 +52,7 @@ PROCESS_ID PUBLIC GetCurrentProcessId(){
     );
 }
 
-LPVOID PUBLIC GetPointerToDosSysVars(){
+LPVOID WINAPI GetPointerToDosSysVars(){
     __asm__ __volatile(
         "push rbx\n\t"
         "mov eax, 0x5200\n\t"
@@ -62,8 +62,8 @@ LPVOID PUBLIC GetPointerToDosSysVars(){
     );
 }
 
-VOID PUBLIC GenerateDPB(LPVOID lpBPB, LPDPB lpDPB){
-    __asm__ __volatile__(
+VOID WINAPI GenerateDPB(LPVOID lpBPB, LPDPB lpDPB){
+    ASM(
         "push rsi\n\t"
         "push rbp\n\t"
         "mov rsi, rcx\n\t"
@@ -75,20 +75,46 @@ VOID PUBLIC GenerateDPB(LPVOID lpBPB, LPDPB lpDPB){
     );
 }
 
-VOID PUBLIC GeneratePartialPSP(LPVOID lpPSPAddress){
-    __asm__ __volatile__(
+VOID WINAPI GeneratePartialPSP(LPVOID lpPSPAddress){
+    ASM(
         "mov rdx, rcx\n\t"
         "mov eax, 0x2600\n\t"
         "int 0x41\n\t"
     );
 }
-VOID PUBLIC GenerateNewPSP(LPVOID lpPSPAddress, DWORD dwSizeOfPSPAllocation){
-    __asm__ __volatile__(
+VOID WINAPI GenerateNewPSP(LPVOID lpPSPAddress, DWORD dwSizeOfPSPAllocation){
+    ASM(
         "push rsi\n\t"
         "mov rsi, rdx\n\t"
         "mov rdx, rcx\n\t"
         "mov eax, 0x5500\n\t"
         "int 0x41\n\t"
         "pop rsi"
+    );
+}
+
+LPCH WINAPI GetPtrToInDOSFlag(){
+    ASM(
+        "push rbx\n\t"
+        "mov eax, 0x3400\n\t"
+        "int 0x41\n\t"
+        "mov rax, rbx\n\t"
+        "pop rbx\n\t"
+    );
+}
+
+VOID GetSwitchChar(LPCH lpSwitchChar){
+    ASM(
+        "mov eax, 0x3700\n\t"
+        "int 0x41\n\t"
+        "mov byte ptr [rcx], dl"
+    );
+}
+
+VOID SetSwitchChar(CHAR switchChar){
+    ASM(
+        "mov eax, 0x3701\n\t"
+        "mov dl, cl\n\t"
+        "int 0x41"
     );
 }

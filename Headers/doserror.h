@@ -3,8 +3,8 @@
 // Define the severity codes
 //
 
-#ifndef DOSERROR_H
-#define DOSERROR_H
+#ifndef _DOSERROR_H
+#define _DOSERROR_H
 
 
 //
@@ -776,7 +776,8 @@ typedef struct _extended_error_info{
     BYTE bErrorLocus;
 } EXT_ERROR, *PEXT_ERROR, *LPEXT_ERROR;
 
-#endif
-
 VOID GetExtendedLastError(LPEXT_ERROR lpExtendedError);
 WORD GetLastError();
+
+
+#endif
