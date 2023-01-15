@@ -1,10 +1,10 @@
 
+#ifndef _DOSFCB_H
+#define _DOSFCB_H
+
 #include "basetsd.h"
 #include "dosfile.h"
 #include "dosdisk.h"
-
-#ifndef _DOSFCB_H
-#define _DOSFCB_H
 
 typedef struct _fcb{
     union{
@@ -32,9 +32,8 @@ typedef struct _extended_fcb{
 
 typedef CHAR PARSE_MODE, *PPARSE_MODE, *LPPARSE_MODE;
 
-VOID WINAPI __setDTA(LPVOID lpDTA);
-LPVOID WINAPI __getDTA();
+VOID DOSAPI __setDTA(LPVOID lpDTA);
+LPVOID DOSAPI __getDTA();
 
-CHAR WINAPI ParseFileName(LPCSTR lpFileName, LPFCB lpFCB, PARSE_MODE pm);
-LPSTR WINAPI GetFQPFileName(LPCSTR lpSourceFileName, LPSTR lpFQFileName);
+CHAR DOSAPI ParseFileName(LPCSTR lpFileName, LPFCB lpFCB, PARSE_MODE pm);
 #endif

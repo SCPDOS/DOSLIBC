@@ -1,8 +1,7 @@
-#include "basetsd.h"
-#include "dosfcb.h"
-
 #ifndef _DOSEXEC_H
 #define _DOSEXEC_H
+#include "basetsd.h"
+#include "dosfcb.h"
 
 typedef BYTE EXIT_CODE, *PEXIT_CODE, *LPEXIT_CODE;
 
@@ -64,12 +63,12 @@ typedef struct _load_overlay_block {
 } LOB, *PLOB, *LPLOB;
 
 
-VOID WINAPI ExitProcessAndStayResidentB(DWORD dwBytesToReserve);
-VOID WINAPI ExitProcessAndStayResidentP(BYTE bExitCode, DWORD dwParagraphsToReserve);
-BOOL WINAPI ExecProcess(LPCSTR lpProcessName, LPEPB lpExecuteParameterBlock);
-BOOL WINAPI LoadProcess(LPCSTR lpProcessName, LPLPB lpLoadParameterBlock);
-BOOL WINAPI LoadOverlay(LPCSTR lpOverlayName, LPLOB lpLoadOverlayBlock);
-VOID WINAPI ExitProcess(BYTE bExitCode);
-RETURN_CODE WINAPI GetExitCodeProcess();
+VOID DOSAPI ExitProcessAndStayResidentB(DWORD dwBytesToReserve);
+VOID DOSAPI ExitProcessAndStayResidentP(BYTE bExitCode, DWORD dwParagraphsToReserve);
+BOOL DOSAPI ExecProcess(LPCSTR lpProcessName, LPEPB lpExecuteParameterBlock);
+BOOL DOSAPI LoadProcess(LPCSTR lpProcessName, LPLPB lpLoadParameterBlock);
+BOOL DOSAPI LoadOverlay(LPCSTR lpOverlayName, LPLOB lpLoadOverlayBlock);
+VOID DOSAPI ExitProcess(BYTE bExitCode);
+RETURN_CODE DOSAPI GetExitCodeProcess();
 
 #endif

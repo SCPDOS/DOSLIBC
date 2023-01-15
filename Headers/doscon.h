@@ -1,20 +1,19 @@
-#include "basetsd.h"
-
 #ifndef _DOSCON_H
 #define _DOSCON_H
+#include "basetsd.h"
 
-CHAR WINAPI GetChar();
-VOID WINAPI PutChar(CHAR c);
-CHAR WINAPI AuxInput();
-VOID WINAPI AuxOutput(CHAR c);
-VOID WINAPI PrnOut(CHAR c);
-BOOL WINAPI DirectConInA(LPCH c);
-VOID WINAPI DirectConOutA(CHAR c);
-CHAR WINAPI DirectConIn();
-CHAR WINAPI ConInput();
-VOID WINAPI WriteString(LPCSTR lpString);
-VOID WINAPI GetBufferedInput(LPSTR lpString, BYTE bufferLen);
-BOOL WINAPI GetConInputStatus();
-VOID WINAPI ClearInputBuffer();
+CHAR DOSAPI GetChar();
+VOID DOSAPI PutChar(CHAR c);
+CHAR DOSAPI AuxInput();
+VOID DOSAPI AuxOutput(CHAR c);
+VOID DOSAPI PrnOutput(CHAR c);
+BOOL DOSAPI DirectConInAsync(LPCH c);
+VOID DOSAPI DirectConOutAsync(CHAR c);
+CHAR DOSAPI DirectConIn();
+CHAR DOSAPI ConInput();
+VOID DOSAPI WriteString(LPCSTR lpString);
+VOID DOSAPI GetBufferedInput(LPSTR lpString, BYTE bufferLen);
+BOOL DOSAPI GetConInputStatus();
+VOID DOSAPI ClearInputBuffer();
 
 #endif

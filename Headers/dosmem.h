@@ -8,16 +8,16 @@
 #define MEMORY_ERROR        0xFF
 
 
-LPVOID WINAPI VirtualAllocate(SIZE_T dwNumberOfParagraphs);
-BOOL WINAPI VirtualFree(LPVOID lpAddress);
-BOOL WINAPI VirtualReallocate(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs);
-BYTE WINAPI GetMemoryAllocationStrategy();
-BOOL WINAPI SetMemoryAllocationStrategy(BYTE bAllocationStrategy);
+LPVOID DOSAPI VirtualAllocate(SIZE_T dwNumberOfParagraphs);
+BOOL DOSAPI VirtualFree(LPVOID lpAddress);
+BOOL DOSAPI VirtualReallocate(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs);
+BYTE DOSAPI GetMemoryAllocationStrategy();
+BOOL DOSAPI SetMemoryAllocationStrategy(BYTE bAllocationStrategy);
 //Undocumented but exposed function for now.
-LPVOID WINAPI PhysicalAllocate(SIZE_T dwNumberOfParagraphs);
+LPVOID DOSAPI PhysicalAllocate(SIZE_T dwNumberOfParagraphs);
 //Undocumented but exposed function for now.
-BOOL WINAPI PhysicalFree(LPVOID lpAddress);
+BOOL DOSAPI PhysicalFree(LPVOID lpAddress);
 //Undocumented but exposed function for now.
-BOOL WINAPI PhysicalReallocate(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs);
+BOOL DOSAPI PhysicalReallocate(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs);
 
 #endif

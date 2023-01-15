@@ -26,15 +26,15 @@ typedef struct _fat_date{
 #define MODIFY_FILENAME         0x04    //Modify the filename if specified
 #define MODIFY_EXT              0x08    //Modify the extension if specified
 
-VOID WINAPI DiskReset();
-VOID WINAPI SetDefaultDrive(DRIVE_INDEX bDiskIndex);
-DRIVE_INDEX WINAPI GetDefaultDrive();
-BOOL WINAPI GetDiskFATInfo(DRIVE_NUMBER bDriveNumber, LPDWORD lpBytesPerSector, \
+VOID DOSAPI DiskReset();
+VOID DOSAPI SetDefaultDrive(DRIVE_INDEX bDiskIndex);
+DRIVE_INDEX DOSAPI GetDefaultDrive();
+BOOL DOSAPI GetDiskFATInfo(DRIVE_NUMBER bDriveNumber, LPDWORD lpBytesPerSector, \
     LPDWORD lpSectorsPerCluster, LPDWORD lpTotalNumberOfClusters, LPVOID *lpMediaDescriptor);
-BOOL WINAPI GetDefaultDiskFATInfo(LPDWORD lpBytesPerSector, \
+BOOL DOSAPI GetDefaultDiskFATInfo(LPDWORD lpBytesPerSector, \
     LPDWORD lpSectorsPerCluster, LPDWORD lpTotalNumberOfClusters, LPVOID *lpMediaDescriptor);
-BOOL WINAPI GetDiskFreeSpace(DRIVE_NUMBER bDriveNumber, LPDWORD lpSectorsPerCluster, \
+BOOL DOSAPI GetDiskFreeSpace(DRIVE_NUMBER bDriveNumber, LPDWORD lpSectorsPerCluster, \
     LPDWORD lpBytesPerSector, LPDWORD lpNumberOfFreeClusters, LPDWORD lpTotalNumberOfFreeClusters);
-BYTE WINAPI GetDiskReadVerifyFlag();
+BYTE DOSAPI GetDiskReadVerifyFlag();
 
 #endif

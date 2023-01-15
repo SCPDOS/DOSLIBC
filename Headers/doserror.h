@@ -776,8 +776,8 @@ typedef struct _extended_error_info{
     BYTE bErrorLocus;
 } EXT_ERROR, *PEXT_ERROR, *LPEXT_ERROR;
 
-VOID GetExtendedLastError(LPEXT_ERROR lpExtendedError);
-WORD GetLastError();
+VOID DOSAPI GetExtendedLastError(LPEXT_ERROR lpExtendedError);
+WORD DOSAPI GetLastError();
 
 
 #endif
