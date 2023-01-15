@@ -27,7 +27,7 @@ build:
 libraries:
 	${COMPILER} ${LIB_CCFLAGS} -c scpdos.c -o ${LIB_PATH}/scpdos.lib
 
-	${COMPILER} ${LIB_CCFLAGS} -c ${SRC_PATH}/io.c -o ${LIB_PATH}/io.lib
+	${COMPILER} ${LIB_CCFLAGS} -c ${SRC_PATH}/posix/io.c -o ${LIB_PATH}/io.lib
 
 	${COMPILER} ${LIB_CCFLAGS} -c ${SRC_PATH}/bochs.c -o ${LIB_PATH}/bochs.lib
 
@@ -36,7 +36,7 @@ all:
 
 	${COMPILER} ${LIB_CCFLAGS} -c scpdos.c -o ${LIB_PATH}/scpdos.lib
 
-	${COMPILER} ${LIB_CCFLAGS} -c ${SRC_PATH}/io.c -o ${LIB_PATH}/io.lib
+	${COMPILER} ${LIB_CCFLAGS} -c ${SRC_PATH}/posix/io.c -o ${LIB_PATH}/io.lib
 
 	${COMPILER} ${LIB_CCFLAGS} -c ${SRC_PATH}/bochs.c -o ${LIB_PATH}/bochs.lib
 

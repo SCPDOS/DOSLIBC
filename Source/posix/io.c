@@ -1,5 +1,4 @@
-#include "../scpdos.h"
-#include "../Headers/io.h"
+#include "../../Headers/posix/io.h"
 
 int umask = 0;   //Global variable which masks which bits we can set 
 

@@ -4,9 +4,10 @@
 
 #ifndef _BASETSD_H
 #define _BASETSD_H
-//Use standard numerical types for ease of handling multiple compilers
-#include <stdint.h>
 
+//Use our own freestanding headers
+
+#include "stdlib.h"
 #include "dosmac.h"
 
 #ifndef VOID
