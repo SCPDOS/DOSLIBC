@@ -1,26 +1,48 @@
+#Makefile for building images without a customised crosscompiler!
+
+CC_FLAGS := -m64 -masm=intel -mabi=ms -nostdlib -ffreestanding -mno-mmx -mno-sse -mno-sse2 -mno-red-zone -Wall -Wextra
+LD_FLAGS := --no-leading-underscore --enable-reloc-section -entry=main --oformat=pei-x86-64
+
+TGT_NAME := main
+
+TGT_CCFLAGS := ${CC_FLAGS} -pie
+LIB_CCFLAGS := ${CC_FLAGS} -static
+
+SRC_PATH := ./Source
+BIN_PATH := ./out/bin
+LIB_PATH := ./out/lib
+OUT_FILE := a.exe
+
+BINUTIL  := x86_64-w64-mingw32
+COMPILER := ${BINUTIL}-gcc
+LINKER   := ${BINUTIL}-ld
+
+LINK_SCRIPT:= /PATH/TO/LINK/SCRIPT
+
 build:
-	x86_64-w64-mingw32-gcc -m64 -masm=intel -mabi=ms -ffreestanding -mno-mmx -mno-sse -mno-sse2 -mno-red-zone -Wall -Wextra -c main.c -o ./out/bin/main.obj
+	${COMPILER} ${TGT_CCFLAGS} -c ${TGT_NAME}.c -o ${BIN_PATH}/${TGT_NAME}.obj
 
-	x86_64-w64-mingw32-ld -entry=main --oformat=pei-x86-64 -o ./out/bin/a.exe ./out/bin/main.obj ./out/lib/scpdos.lib ./out/lib/bochs.lib
-
-	rm ./out/bin/*.obj
+	${LINKER} ${LD_FLAGS} -o ${BIN_PATH}/${OUT_FILE} ${BIN_PATH}/${TGT_NAME}.obj ${LIB_PATH}/scpdos.lib ${LIB_PATH}/bochs.lib
 
 libraries:
-	x86_64-w64-mingw32-gcc -m64 -masm=intel -mabi=ms -ffreestanding -mno-mmx -mno-sse -mno-sse2 -mno-red-zone -Wall -Wextra -static -c scpdos.c -o ./out/lib/scpdos.lib
+	${COMPILER} ${LIB_CCFLAGS} -c scpdos.c -o ${LIB_PATH}/scpdos.lib
 
-	x86_64-w64-mingw32-gcc -m64 -masm=intel -mabi=ms -ffreestanding -mno-mmx -mno-sse -mno-sse2 -mno-red-zone -Wall -Wextra -static -c ./Source/io.c -o ./out/lib/io.lib
+	${COMPILER} ${LIB_CCFLAGS} -c ${SRC_PATH}/io.c -o ${LIB_PATH}/io.lib
 
-	x86_64-w64-mingw32-gcc -m64 -masm=intel -mabi=ms -ffreestanding -mno-mmx -mno-sse -mno-sse2 -mno-red-zone -Wall -Wextra -static -c ./Source/bochs.c -o ./out/lib/bochs.lib
+	${COMPILER} ${LIB_CCFLAGS} -c ${SRC_PATH}/bochs.c -o ${LIB_PATH}/bochs.lib
 
 all:
-	x86_64-w64-mingw32-gcc -m64 -masm=intel -mabi=ms -ffreestanding -mno-mmx -mno-sse -mno-sse2 -mno-red-zone -Wall -Wextra -c main.c -o ./out/bin/main.obj
+	${COMPILER} ${TGT_CCFLAGS} -c ${TGT_NAME}.c -o ${BIN_PATH}/${TGT_NAME}.obj
 
-	x86_64-w64-mingw32-gcc -m64 -masm=intel -mabi=ms -ffreestanding -mno-mmx -mno-sse -mno-sse2 -mno-red-zone -Wall -Wextra -static -c scpdos.c -o ./out/lib/scpdos.lib
+	${COMPILER} ${LIB_CCFLAGS} -c scpdos.c -o ${LIB_PATH}/scpdos.lib
 
-	x86_64-w64-mingw32-gcc -m64 -masm=intel -mabi=ms -ffreestanding -mno-mmx -mno-sse -mno-sse2 -mno-red-zone -Wall -Wextra -static -c ./Source/io.c -o ./out/lib/io.lib
+	${COMPILER} ${LIB_CCFLAGS} -c ${SRC_PATH}/io.c -o ${LIB_PATH}/io.lib
 
-	x86_64-w64-mingw32-gcc -m64 -masm=intel -mabi=ms -ffreestanding -mno-mmx -mno-sse -mno-sse2 -mno-red-zone -Wall -Wextra -static -c ./Source/bochs.c -o ./out/lib/bochs.lib
+	${COMPILER} ${LIB_CCFLAGS} -c ${SRC_PATH}/bochs.c -o ${LIB_PATH}/bochs.lib
 
-	x86_64-w64-mingw32-ld -entry=main --oformat=pei-x86-64 -o ./out/bin/a.exe ./out/bin/main.obj ./out/lib/scpdos.lib ./out/lib/bochs.lib
+	${LINKER} ${LD_FLAGS} -o ${BIN_PATH}/${OUT_FILE} ${BIN_PATH}/${TGT_NAME}.obj ${LIB_PATH}/scpdos.lib ${LIB_PATH}/bochs.lib
 
-	rm ./out/bin/*.obj
+clean:
+#Using the @ symbol suppresses echoing to the console. @echo "" inserts a new line between the command and the returned prompt
+	@rm ${BIN_PATH}/*.obj
+	@echo ""

@@ -1,6 +1,8 @@
 #include "scpdos.h"
+#include "./Headers/bochs.h"
 
-void __main(int argc, char* argv[]) {
+void main() {
+	bochsBreak();
 	LPCSTR testString = "Hello World!\n\r";
 	WriteString(testString);
 	ExitProcess(0);
