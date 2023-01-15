@@ -1,7 +1,7 @@
 #Makefile for building images without a customised crosscompiler!
 
 CC_FLAGS := -m64 -masm=intel -mabi=ms -nostdlib -ffreestanding -mno-mmx -mno-sse -mno-sse2 -mno-red-zone -Wall -Wextra
-LD_FLAGS := --no-leading-underscore --enable-reloc-section -entry=main --oformat=pei-x86-64
+LD_FLAGS := --no-leading-underscore --enable-reloc-section -entry=start --oformat=pei-x86-64
 
 TGT_NAME := main
 

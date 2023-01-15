@@ -22,4 +22,10 @@
 #include "Headers/dosnls.h"
 
 #pragma pack(pop)
+
+//Export the global runtime vars
+LPCVOID _env;
+LPCVOID _argc;
+LPCVOID _argv;
+
 #endif

@@ -1,12 +1,13 @@
 %use masm
 BITS 64
-;ASSEMBLE WITH nasm ./Source/Asm/crt0.asm -o ./out/lib/crt0.lib -f win64
+;ASSEMBLE WITH nasm ./Source/Asm/crt0.asm -o ./out/lib/crt0.lib -f win64 -l ./out/dbg/listings/crt0.lst
 ;Need to modify slightly to 
 extern main
 extern _BSS_START_
-extern _BSS_END_
+extern _BSS_SIZE_
 extern _argv    ;Argument Vector
 extern _argc    ;Argument Count
+extern _env     ;Environment
 
 global start 
     section .text
@@ -35,31 +36,40 @@ start:
 ;Step 2)
     mov rdi, _BSS_START_
     mov rax, rdi
-    mov rcx, _BSS_END_
-    sub rcx, rax
+    mov rcx, _BSS_SIZE_
     xor eax, eax
     rep stosb
 ;Step 3)
-    ;We're gonna be proper and ask DOS to give us the PTR to the CMDLINE data
+    ;We're gonna be proper and ask DOS to give us the ptr to ENV and CMDLINE
     ;The cmdline is guaranteed to be at ptr + 37 (+36 gives number of chars)
+    mov eax, 0x6100 ;New System Service, get environment ptr
+    int 0x41
+    mov qword [_env], rdx
     mov eax, 0x6101 ;New System Service, get cmdline ptr pls in rdx
     int 0x41
+    mov eax, 0x7F   ;Max number of chars in buffer (127)
     movzx ecx, byte ptr [rdx + 36]  ;Get the number of chars in here
+    cmp ecx, eax    ;Is the number of chars bigger than 127?
+    cmova ecx, eax  ;If so, replace it with 127
     lea rdi, qword ptr [rdx + 37]   ;Get the ptr to the char array
     push rdi    ;Push the pointer to the start of the char array
     xor edx, edx    ;Clear the argc counter
-    mov al, " " ;Replace all spaces with 0's
+    mov al, " " ;Search for space
 scanLp:
     repne scasb
-    dec rdi ;Return rdi pointing to the space char
-    cmp byte [rdi], 0x0D    ;String terminating char?
-    mov byte [rdi], 0   ;Always store a terminating null
-    je short step4
+    cmp byte [rdi - 1], 0x0D    ;Are we at terminating char?
+    je step4
+    jecxz step4 ;No more chars, exit
+    repe scasb  ;Skip all the spaces
     jecxz step4
-    inc edx ;Argument found
+    ;rdi points to the char after the first non-space
+    dec rdi ;Go to the first non-space char
+    mov byte [rdi - 1], 0   ;Replace the last space with a null
+    inc edx ;One more char processed
     jmp short scanLp 
 step4:
 ;Step 4) 
+    mov byte [rdi - 1], 0   ;Store a final terminating null
     inc edx ;Add one more (if none, for cmdname)
     mov ecx, edx
     pop rdx ;Pop the pointer back
