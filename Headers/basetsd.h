@@ -4,6 +4,8 @@
 
 #ifndef _BASETSD_H
 #define _BASETSD_H
+//Use standard numerical types for ease of handling multiple compilers
+#include <stdint.h>
 
 #include "dosmac.h"
 
@@ -31,39 +33,39 @@
 #define BAD_HANDLE 0xFFFFFFFFFFFFFFFF
 #endif
 
-typedef char CHAR;
-typedef short SHORT;
-typedef int INT;
-typedef long LONG;
+typedef int8_t CHAR;
+typedef int16_t SHORT;
+typedef int32_t INT;
+typedef int64_t LONG;
 
-typedef unsigned char BYTE;
-typedef unsigned short WORD;
-typedef unsigned int DWORD;
-typedef unsigned long QWORD;
+typedef uint8_t BYTE;
+typedef uint16_t WORD;
+typedef uint32_t DWORD;
+typedef uint64_t QWORD;
 
-typedef int          BOOL;
+typedef int32_t      BOOL;
 typedef float        FLOAT;
 typedef FLOAT       *PFLOAT;
 typedef BOOL        *PBOOL;
 typedef BOOL        *LPBOOL;
 typedef BYTE        *PBYTE;
 typedef BYTE        *LPBYTE;
-typedef int         *PINT;
-typedef int         *LPINT;
+typedef int32_t     *PINT;
+typedef int32_t     *LPINT;
 typedef WORD        *PWORD;
 typedef WORD        *LPWORD;
-typedef long        *PLONG;
-typedef long        *LPLONG;
+typedef uint64_t    *PLONG;
+typedef uint64_t    *LPLONG;
 typedef DWORD       *PDWORD;
 typedef DWORD       *LPDWORD;
 typedef void        *LPVOID;
 typedef CONST void  *LPCVOID;
 
-typedef long INT_PTR, *PINT_PTR;
-typedef unsigned long UINT_PTR, *PUINT_PTR;
+typedef int32_t INT_PTR, *PINT_PTR;
+typedef uint32_t UINT_PTR, *PUINT_PTR;
 
-typedef long LONG_PTR, *PLONG_PTR;
-typedef unsigned long ULONG_PTR, *PULONG_PTR;
+typedef int64_t LONG_PTR, *PLONG_PTR;
+typedef uint64_t ULONG_PTR, *PULONG_PTR;
 
 //
 // ANSI (Multi-byte Character) types
