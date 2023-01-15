@@ -1,0 +1,85 @@
+     1                                  %use masm
+     2                                  BITS 64
+     3                                  ;Need to modify slightly to 
+     4                                  extern main
+     5                                  extern _BSS_START_
+     6                                  extern _BSS_SIZE_
+     7                                  extern _argv    ;Argument Vector
+     8                                  extern _argc    ;Argument Count
+     9                                  extern _env     ;Environment
+    10                                  
+    11                                  global start 
+    12                                      section .text
+    13                                  ;TODO:
+    14                                  ;1) Paragraph align the stack (downwards ofc)
+    15                                  ;2) Clean the BSS
+    16                                  ;3) Get a pointer to the command line. Count the number of times 
+    17                                  ;   a space/tab region appears, to pass as argc in rcx and the 
+    18                                  ;   pointer to start of the command line in rdx.
+    19                                  ;   Make sure to null terminate each string 
+    20                                  ;       (replace first char in space region with 00).
+    21                                  ;
+    22                                  ;4) Call main.
+    23                                  ;5) If eax > 0FFh, set al = 0FFh and 41h/AH=4Ch exit
+    24                                  ;Future expansion:
+    25                                  ;Hook Int 00h to prevent termination in the event of such a bug.
+    26                                  ; We first print an error message, then pop the RIP value from 
+    27                                  ; the stack, decode the instruction and go to the next 
+    28                                  ; instruction after it!
+    29                                  start:
+    30                                  ;Step 1)
+    31 00000000 4889E0                      mov rax, rsp
+    32 00000003 48C1E805                    shr rax, 5  ;Divide by 16
+    33 00000007 48C1E005                    shl rax, 5  
+    34 0000000B 4889C4                      mov rsp, rax
+    35                                  ;Step 2)
+    36 0000000E 48BF-                       mov rdi, _BSS_START_
+    36 00000010 [0000000000000000] 
+    37 00000018 4889F8                      mov rax, rdi
+    38 0000001B 48B9-                       mov rcx, _BSS_SIZE_
+    38 0000001D [0000000000000000] 
+    39 00000025 31C0                        xor eax, eax
+    40 00000027 F3AA                        rep stosb
+    41                                  ;Step 3)
+    42                                      ;We're gonna be proper and ask DOS to give us the ptr to ENV and CMDLINE
+    43                                      ;The cmdline is guaranteed to be at ptr + 37 (+36 gives number of chars)
+    44 00000029 B800610000                  mov eax, 0x6100 ;New System Service, get environment ptr
+    45 0000002E CD41                        int 0x41
+    46 00000030 488915(00000000)            mov qword [_env], rdx
+    47 00000037 B801610000                  mov eax, 0x6101 ;New System Service, get cmdline ptr pls in rdx
+    48 0000003C CD41                        int 0x41
+    49 0000003E B87F000000                  mov eax, 0x7F   ;Max number of chars in buffer (127)
+    50 00000043 0FB64A24                    movzx ecx, byte ptr [rdx + 36]  ;Get the number of chars in here
+    51 00000047 39C1                        cmp ecx, eax    ;Is the number of chars bigger than 127?
+    52 00000049 0F47C8                      cmova ecx, eax  ;If so, replace it with 127
+    53 0000004C 488D7A25                    lea rdi, qword ptr [rdx + 37]   ;Get the ptr to the char array
+    54 00000050 57                          push rdi    ;Push the pointer to the start of the char array
+    55 00000051 31D2                        xor edx, edx    ;Clear the argc counter
+    56 00000053 B020                        mov al, " " ;Search for space
+    57                                  scanLp:
+    58 00000055 F2AE                        repne scasb
+    59 00000057 807FFF0D                    cmp byte [rdi - 1], 0x0D    ;Are we at terminating char?
+    60 0000005B 7413                        je step4
+    61 0000005D 67E310                      jecxz step4 ;No more chars, exit
+    62 00000060 F3AE                        repe scasb  ;Skip all the spaces
+    63 00000062 67E30B                      jecxz step4
+    64                                      ;rdi points to the char after the first non-space
+    65 00000065 48FFCF                      dec rdi ;Go to the first non-space char
+    66 00000068 C647FF00                    mov byte [rdi - 1], 0   ;Replace the last space with a null
+    67 0000006C FFC2                        inc edx ;One more char processed
+    68 0000006E EBE5                        jmp short scanLp 
+    69                                  step4:
+    70                                  ;Step 4) 
+    71 00000070 C647FF00                    mov byte [rdi - 1], 0   ;Store a final terminating null
+    72 00000074 FFC2                        inc edx ;Add one more (if none, for cmdname)
+    73 00000076 89D1                        mov ecx, edx
+    74 00000078 5A                          pop rdx ;Pop the pointer back
+    75 00000079 48890D(00000000)            mov qword [_argc], rcx
+    76 00000080 488915(00000000)            mov qword [_argv], rdx
+    77 00000087 E8(00000000)                call main
+    78                                  ;Step 5)
+    79 0000008C B9FF000000                  mov ecx, 0xFF
+    80 00000091 39C8                        cmp eax, ecx
+    81 00000093 0F47C1                      cmova eax, ecx 
+    82 00000096 0D004C0000                  or eax, 0x4C00  ;Add the exit code into AH w/o stall
+    83 0000009B CD41                        int 0x41 ;Return to DOS
