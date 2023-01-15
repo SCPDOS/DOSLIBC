@@ -11,9 +11,3 @@
 #include "Source/dosnet.c"
 #include "Source/dostime.c"
 #include "Source/dosnls.c"
-
-void main(int argc, char* argv[]) {
-	//LPCSTR testString = "Hello World!\n\r";
-	//WriteString(testString);
-	//ExitProcess(0);
-}

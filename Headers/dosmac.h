@@ -21,9 +21,7 @@
 #undef CC_GCC
 #endif
 
-#define EXTERN	extern
-#define NAKED	__declspec(naked)	
-
+#define EXTERN	extern	
 
 #define CC_MSVC 1
 #define CC_GCC 2
@@ -31,9 +29,11 @@
 #if defined(_MSC_VER)
 #define DOSAPI __fastcall
 #define COMPILER CC_MSVC
+#define NAKED
 #elif defined(__GNUC__)
 #define DOSAPI __attribute__((ms_abi))
 #define COMPILER CC_GCC
+#define NAKED __attribute__((naked))
 #endif
 
 #if COMPILER==CC_GCC 

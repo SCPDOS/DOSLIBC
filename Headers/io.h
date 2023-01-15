@@ -1,6 +1,6 @@
 #ifndef _IO_H
 #define _IO_H
-#include "scpdos.h"
+#include "../scpdos.h"
 
 #define _S_IREAD  0x0100 // Read permission, owner
 #define _S_IWRITE 0x0080 // Write permission, owner
