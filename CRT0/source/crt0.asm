@@ -84,7 +84,7 @@ step4:
     or eax, 0x4C00  ;Add the exit code into AH w/o stall
     int 0x41 ;Return to DOS
 
-;This symbol is a temporary solution to an awkward GCC behaviour
-; where it just decides to call this from within main.
+;GCC provides a call to this main constructor. Since we 
+; setup everything in assembly in CRT0, we don't need this.
 __main:
     ret
