@@ -1,0 +1,181 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD ./../CRT0/out/lib/crt0.lib
+                0x0000000000400000                __image_base__ = 0x400000
+                0x0000000000000000                __dll__ = 0x0
+                0x0000000000400000                __ImageBase = 0x400000
+                0x0000000000001000                __section_alignment__ = 0x1000
+                0x0000000000000200                __file_alignment__ = 0x200
+                0x0000000000000004                __major_os_version__ = 0x4
+                0x0000000000000000                __minor_os_version__ = 0x0
+                0x0000000000000000                __major_image_version__ = 0x0
+                0x0000000000000000                __minor_image_version__ = 0x0
+                0x0000000000000005                __major_subsystem_version__ = 0x5
+                0x0000000000000002                __minor_subsystem_version__ = 0x2
+                0x0000000000000003                __subsystem__ = 0x3
+                0x0000000000200000                __size_of_stack_reserve__ = 0x200000
+                0x0000000000001000                __size_of_stack_commit__ = 0x1000
+                0x0000000000100000                __size_of_heap_reserve__ = 0x100000
+                0x0000000000001000                __size_of_heap_commit__ = 0x1000
+                0x0000000000000000                __loader_flags__ = 0x0
+                0x0000000000000000                __dll_characteristics__ = 0x0
+                0x0000000000401000                . = (__ImageBase + 0x1000)
+
+.text           0x0000000000401000      0xe00 load address 0x0000000000001000
+ *(.text)
+ .text          0x0000000000401000       0x9e ./../CRT0/out/lib/crt0.lib
+                0x0000000000401000                start
+                0x000000000040109d                __main
+ *fill*         0x000000000040109e        0x2 
+ .text          0x00000000004010a0       0x40 ./out/bin/main.obj
+                0x00000000004010a0                main
+ .text          0x00000000004010e0      0xb90 ./../DOSCRT/./out/lib/scpdos.lib
+                0x00000000004010e0                SetInterruptVector
+                0x00000000004010f5                GetInterruptVector
+                0x000000000040110b                SetDiskVerifyState
+                0x0000000000401119                ClearDiskVerifyState
+                0x0000000000401127                GetDOSVersion
+                0x0000000000401135                GetCtrlBreakState
+                0x0000000000401146                SetCtrlBreakState
+                0x0000000000401159                __getErrorInformation
+                0x000000000040118e                GetExtendedLastError
+                0x00000000004011eb                GetLastError
+                0x0000000000401225                GetDefaultDiskDPBPointer
+                0x0000000000401246                GetDPBPointer
+                0x0000000000401274                SetCurrentProcessId
+                0x000000000040128a                GetCurrentProcessId
+                0x000000000040129d                GetPointerToDosSysVars
+                0x00000000004012b0                GenerateDPB
+                0x00000000004012d0                GeneratePartialPSP
+                0x00000000004012e5                GenerateNewPSP
+                0x0000000000401302                GetPtrToInDOSFlag
+                0x0000000000401315                GetSwitchChar
+                0x0000000000401326                SetSwitchChar
+                0x000000000040133b                __setDTA
+                0x0000000000401350                __getDTA
+                0x0000000000401363                ParseFileName
+                0x000000000040138a                CreateDirectory
+                0x00000000004013a9                DeleteDirectory
+                0x00000000004013c8                ChangeCurrentDirectory
+                0x00000000004013e7                CreateFile
+                0x0000000000401407                OpenFile
+                0x0000000000401437                CloseFile
+                0x000000000040145a                ReadFile
+                0x0000000000401490                WriteFile
+                0x00000000004014c6                DeleteFile
+                0x00000000004014e8                SetFilePointer
+                0x0000000000401509                SetFilePointerL
+                0x0000000000401537                GetFileAttributes
+                0x0000000000401554                SetFileAttributes
+                0x0000000000401574                DuplicateHandle
+                0x000000000040159c                ForceDuplicateHandle
+                0x00000000004015c5                GetCurrentDirectory
+                0x00000000004015f0                __FindFirst
+                0x000000000040161b                FindFirstFile
+                0x0000000000401669                __FindNext
+                0x0000000000401681                FindNextFile
+                0x00000000004016bc                FindClose
+                0x00000000004016cb                RenameFile
+                0x00000000004016f3                GetFileDateAndTime
+                0x0000000000401725                SetFileDateAndTime
+                0x000000000040174d                CreateTemporaryFile
+                0x000000000040176d                CreateUniqueFile
+                0x000000000040178d                GetFQFileName
+                0x00000000004017b7                FlushFile
+                0x00000000004017d6                ExecProcess
+                0x00000000004017fe                LoadProcess
+                0x0000000000401826                LoadOverlay
+                0x000000000040184e                ExitProcess
+                0x0000000000401863                ExitProcessAndStayResidentP
+                0x000000000040187b                ExitProcessAndStayResidentB
+                0x0000000000401889                GetExitCodeProcess
+                0x0000000000401897                __AllocateMemory
+                0x00000000004018b2                __FreeMemory
+                0x00000000004018d1                __ReallocateMemory
+                0x00000000004018f7                VirtualAllocate
+                0x0000000000401912                VirtualFree
+                0x000000000040192d                VirtualReallocate
+                0x0000000000401953                PhysicalAllocate
+                0x000000000040196e                PhysicalFree
+                0x0000000000401989                PhysicalReallocate
+                0x00000000004019af                GetMemoryAllocationStrategy
+                0x00000000004019bd                SetMemoryAllocationStrategy
+                0x00000000004019dd                GetChar
+                0x00000000004019ee                PutChar
+                0x0000000000401a04                AuxInput
+                0x0000000000401a15                AuxOutput
+                0x0000000000401a2b                PrnOutput
+                0x0000000000401a41                DirectConInAsync
+                0x0000000000401a66                DirectConOutAsync
+                0x0000000000401a81                DirectConIn
+                0x0000000000401a92                ConInput
+                0x0000000000401aa3                __WriteString
+                0x0000000000401abf                WriteString
+                0x0000000000401b1e                __GetBufferedInput
+                0x0000000000401b33                GetBufferedInput
+                0x0000000000401b71                GetConInputStatus
+                0x0000000000401b81                ClearInputBuffer
+                0x0000000000401b8f                GetDate
+                0x0000000000401bc4                SetDate
+                0x0000000000401bec                GetTime
+                0x0000000000401c20                SetTime
+                0x0000000000401c58                GetCountryInformation
+ .text          0x0000000000401c70       0x10 ./../BREAK/./out/lib/bochs.lib
+                0x0000000000401c70                bochsBreak
+
+.rdata          0x0000000000402000      0x200 load address 0x0000000000002000
+ .rdata         0x0000000000402000       0x10 ./out/bin/main.obj
+ .rdata$zzz     0x0000000000402010       0x20 ./out/bin/main.obj
+ .rdata$zzz     0x0000000000402030       0x20 ./../DOSCRT/./out/lib/scpdos.lib
+ .rdata$zzz     0x0000000000402050       0x20 ./../BREAK/./out/lib/bochs.lib
+
+.xdata          0x0000000000403000      0x400 load address 0x0000000000003000
+ .xdata         0x0000000000403000        0xc ./out/bin/main.obj
+ .xdata         0x000000000040300c      0x300 ./../DOSCRT/./out/lib/scpdos.lib
+ .xdata         0x000000000040330c        0x8 ./../BREAK/./out/lib/bochs.lib
+
+.pdata          0x0000000000404000      0x600 load address 0x0000000000004000
+ .pdata         0x0000000000404000        0xc ./out/bin/main.obj
+ .pdata         0x000000000040400c      0x438 ./../DOSCRT/./out/lib/scpdos.lib
+ .pdata         0x0000000000404444        0xc ./../BREAK/./out/lib/bochs.lib
+
+.data           0x0000000000404450        0x0 load address 0x0000000000004450
+ *(.data)
+ .data          0x0000000000404450        0x0 ./out/bin/main.obj
+ .data          0x0000000000404450        0x0 ./../DOSCRT/./out/lib/scpdos.lib
+ .data          0x0000000000404450        0x0 ./../BREAK/./out/lib/bochs.lib
+
+.drectve        0x0000000000405000      0x200 load address 0x0000000000005000
+ .drectve       0x0000000000405000       0x40 ./out/bin/main.obj
+
+.reloc          0x0000000000406000      0x200 load address 0x0000000000006000
+ .reloc         0x0000000000406000        0xc dll stuff
+
+.rodata
+ *(.rodata)
+
+.bss            0x0000000000406010       0x20 load address 0x0000000000006010
+                0x0000000000406010                _BSS_START_ = .
+ *(.bss)
+ .bss           0x0000000000406010        0x0 ./out/bin/main.obj
+ .bss           0x0000000000406010       0x20 ./../DOSCRT/./out/lib/scpdos.lib
+                0x0000000000406010                _env
+                0x0000000000406018                _argc
+                0x0000000000406020                _argv
+ .bss           0x0000000000406030        0x0 ./../BREAK/./out/lib/bochs.lib
+ *(COMMON)
+ COMMON         0x0000000000406030        0x0 ./out/bin/main.obj
+ *(.bss*)
+ *(.stack)
+                0x0000000000406030                _BSS_END_ = .
+LOAD ./out/bin/main.obj
+LOAD ./../DOSCRT/./out/lib/scpdos.lib
+LOAD ./../BREAK/./out/lib/bochs.lib
+OUTPUT(./out/bin/a.exe pei-x86-64)
+LOAD dll stuff

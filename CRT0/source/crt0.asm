@@ -3,12 +3,13 @@ BITS 64
 ;Need to modify slightly to 
 extern main
 extern _BSS_START_
-extern _BSS_SIZE_
+extern _BSS_END_
 extern _argv    ;Argument Vector
 extern _argc    ;Argument Count
 extern _env     ;Environment
 
 global start 
+global __main
     section .text
 ;TODO:
 ;1) Paragraph align the stack (downwards ofc)
@@ -28,14 +29,17 @@ global start
 ; instruction after it!
 start:
 ;Step 1)
+;BREAKPOINT BREAKPOINT BREAKPOINT BREAKPOINT 
+    ;xchg bx, bx
+;BREAKPOINT BREAKPOINT BREAKPOINT BREAKPOINT 
     mov rax, rsp
     shr rax, 5  ;Divide by 16
     shl rax, 5  
     mov rsp, rax
 ;Step 2)
     mov rdi, _BSS_START_
-    mov rax, rdi
-    mov rcx, _BSS_SIZE_
+    mov rcx, _BSS_END_
+    sub rcx, rdi
     xor eax, eax
     rep stosb
 ;Step 3)
@@ -81,3 +85,8 @@ step4:
     cmova eax, ecx 
     or eax, 0x4C00  ;Add the exit code into AH w/o stall
     int 0x41 ;Return to DOS
+
+;This symbol is a temporary solution to an awkward GCC behaviour
+; where it just decides to call this from within main.
+__main:
+    ret
