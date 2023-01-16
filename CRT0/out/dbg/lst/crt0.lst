@@ -8,85 +8,126 @@
      8                                  extern _argc    ;Argument Count
      9                                  extern _env     ;Environment
     10                                  
-    11                                  global start 
+    11                                  global __start__
     12                                  global __main
     13                                      section .text
     14                                  ;TODO:
-    15                                  ;1) Paragraph align the stack (downwards ofc)
-    16                                  ;2) Clean the BSS
-    17                                  ;3) Get a pointer to the command line. Count the number of times 
-    18                                  ;   a space/tab region appears, to pass as argc in rcx and the 
-    19                                  ;   pointer to start of the command line in rdx.
-    20                                  ;   Make sure to null terminate each string 
-    21                                  ;       (replace first char in space region with 00).
-    22                                  ;
-    23                                  ;4) Call main.
-    24                                  ;5) If eax > 0FFh, set al = 0FFh and 41h/AH=4Ch exit
-    25                                  ;Future expansion:
-    26                                  ;Hook Int 00h to prevent termination in the event of such a bug.
-    27                                  ; We first print an error message, then pop the RIP value from 
-    28                                  ; the stack, decode the instruction and go to the next 
-    29                                  ; instruction after it!
-    30                                  start:
-    31                                  ;Step 1)
-    32                                  ;BREAKPOINT BREAKPOINT BREAKPOINT BREAKPOINT 
-    33                                     ;xchg bx, bx
-    34                                  ;BREAKPOINT BREAKPOINT BREAKPOINT BREAKPOINT 
-    35 00000000 4889E0                      mov rax, rsp
-    36 00000003 48C1E805                    shr rax, 5  ;Divide by 16
-    37 00000007 48C1E005                    shl rax, 5  
-    38 0000000B 4889C4                      mov rsp, rax
-    39                                  ;Step 2)
-    40 0000000E 48BF-                       mov rdi, _BSS_START_
-    40 00000010 [0000000000000000] 
-    41 00000018 48B9-                       mov rcx, _BSS_END_
-    41 0000001A [0000000000000000] 
-    42 00000022 4829F9                      sub rcx, rdi
-    43 00000025 31C0                        xor eax, eax
-    44 00000027 F3AA                        rep stosb
-    45                                  ;Step 3)
-    46                                      ;We're gonna be proper and ask DOS to give us the ptr to ENV and CMDLINE
-    47                                      ;The cmdline is guaranteed to be at ptr + 37 (+36 gives number of chars)
-    48 00000029 B800610000                  mov eax, 0x6100 ;New System Service, get environment ptr
-    49 0000002E CD41                        int 0x41
-    50 00000030 488915(00000000)            mov qword [_env], rdx
-    51 00000037 B801610000                  mov eax, 0x6101 ;New System Service, get cmdline ptr pls in rdx
-    52 0000003C CD41                        int 0x41
-    53 0000003E B87F000000                  mov eax, 0x7F   ;Max number of chars in buffer (127)
-    54 00000043 0FB64A24                    movzx ecx, byte ptr [rdx + 36]  ;Get the number of chars in here
-    55 00000047 39C1                        cmp ecx, eax    ;Is the number of chars bigger than 127?
-    56 00000049 0F47C8                      cmova ecx, eax  ;If so, replace it with 127
-    57 0000004C 488D7A25                    lea rdi, qword ptr [rdx + 37]   ;Get the ptr to the char array
-    58 00000050 57                          push rdi    ;Push the pointer to the start of the char array
-    59 00000051 31D2                        xor edx, edx    ;Clear the argc counter
-    60 00000053 B020                        mov al, " " ;Search for space
-    61                                  scanLp:
-    62 00000055 F2AE                        repne scasb
-    63 00000057 67E310                      jecxz step4 ;No more chars, exit
-    64 0000005A F3AE                        repe scasb  ;Skip all the spaces
-    65 0000005C 67E30B                      jecxz step4
-    66                                      ;rdi points to the char after the first non-space
-    67 0000005F 48FFCF                      dec rdi ;Go to the first non-space char
-    68 00000062 C647FF00                    mov byte [rdi - 1], 0   ;Replace the last space with a null
-    69 00000066 FFC2                        inc edx ;One more char processed
-    70 00000068 EBEB                        jmp short scanLp 
-    71                                  step4:
-    72                                  ;Step 4) 
-    73 0000006A C60700                      mov byte [rdi], 0   ;Store a final terminating null
-    74 0000006D FFC2                        inc edx ;Add one more (if none, for cmdname)
-    75 0000006F 89D1                        mov ecx, edx
-    76 00000071 5A                          pop rdx ;Pop the pointer back
-    77 00000072 48890D(00000000)            mov qword [_argc], rcx
-    78 00000079 488915(00000000)            mov qword [_argv], rdx
-    79 00000080 E8(00000000)                call main
-    80                                  ;Step 5)
-    81 00000085 B9FF000000                  mov ecx, 0xFF
-    82 0000008A 39C8                        cmp eax, ecx
-    83 0000008C 0F47C1                      cmova eax, ecx 
-    84 0000008F 0D004C0000                  or eax, 0x4C00  ;Add the exit code into AH w/o stall
-    85 00000094 CD41                        int 0x41 ;Return to DOS
-    86                                  
-    87                                  ;This symbol is a temporary solution to an awkward GCC behaviour
-    88                                  ; where it just decides to call this from within main.
-    89                                  __main:
-    90 00000096 C3                          ret
+    15                                  ;0) Paragraph align the stack
+    16                                  ;1) Clean the BSS
+    17                                  ;2) Process command line to get argc, argv
+    18                                  ;3) Call main.
+    19                                  ;4) If eax > 0FFh, set al = 0FFh and 41h/AH=4Ch exit
+    20                                  ;Future expansion:
+    21                                  ;Hook Int 00h to prevent termination in the event of such a bug.
+    22                                  ; We first print an error message, then pop the RIP value from 
+    23                                  ; the stack, decode the instruction and go to the next 
+    24                                  ; instruction after it!
+    25                                  __start__:
+    26                                  ;BREAKPOINT BREAKPOINT BREAKPOINT BREAKPOINT
+    27                                      ;xchg bx, bx
+    28                                  ;BREAKPOINT BREAKPOINT BREAKPOINT BREAKPOINT
+    29 00000000 FC                          cld ;Ensure the direction is good (DOS does this anyway)
+    30                                  ;Step 0)
+    31                                  ;Realign the stack 
+    32 00000001 4889E0                      mov rax, rsp
+    33 00000004 48C1E804                    shr rax, 4  ;Divide by 16
+    34 00000008 48C1E004                    shl rax, 4  
+    35 0000000C 4889C4                      mov rsp, rax
+    36                                  ;Leave rsp alone now
+    37                                  ;Step 1)
+    38 0000000F 48BF-                       mov rdi, _BSS_START_
+    38 00000011 [0000000000000000] 
+    39 00000019 48B9-                       mov rcx, _BSS_END_
+    39 0000001B [0000000000000000] 
+    40 00000023 4829F9                      sub rcx, rdi
+    41 00000026 31C0                        xor eax, eax
+    42 00000028 F3AA                        rep stosb
+    43                                  ;Step 2)
+    44                                      ;We're gonna be proper and ask DOS to give us the ptr to ENV and CMDLINE
+    45                                      ;The cmdline is guaranteed to be at ptr + 37 (+36 gives number of chars)
+    46 0000002A B800610000                  mov eax, 0x6100 ;New System Service, get environment ptr
+    47 0000002F CD41                        int 0x41
+    48 00000031 488915(00000000)            mov qword [_env], rdx
+    49 00000038 B801610000                  mov eax, 0x6101 ;New System Service, get cmdline ptr pls in rdx
+    50 0000003D CD41                        int 0x41
+    51 0000003F B87F000000                  mov eax, 0x7F   ;Max number of chars in buffer (127)
+    52 00000044 0FB64A24                    movzx ecx, byte ptr [rdx + 36]  ;Get the number of chars in here
+    53 00000048 39C1                        cmp ecx, eax    ;Is the number of chars bigger than 127?
+    54 0000004A 0F47C8                      cmova ecx, eax  ;If so, replace it with 127
+    55 0000004D 488D7A25                    lea rdi, qword ptr [rdx + 37]   ;Get the ptr to the char array
+    56 00000051 4889FE                      mov rsi, rdi    ;Save the ptr to the string array in rsi
+    57 00000054 31D2                        xor edx, edx    ;Clear the argc counter
+    58 00000056 B020                        mov al, " "     ;Search for space
+    59                                  makeCstrings:
+    60 00000058 F2AE                        repne scasb     ;Search for first space past name
+    61 0000005A 67E314                      jecxz endOfCmdLine ;No more chars, exit and terminate current string
+    62 0000005D C647FF00                    mov byte [rdi - 1], 0   ;Null terminate this string
+    63 00000061 FFC2                        inc edx ;One more string processed
+    64 00000063 F3AE                        repe scasb  ;Skip all the spaces
+    65 00000065 85C9                        test ecx, ecx
+    66 00000067 75EF                        jnz makeCstrings
+    67 00000069 807FFF20                    cmp byte [rdi - 1], " "
+    68 0000006D 7502                        jne endOfCmdLine    ;If the last char was not a space, skip the dec
+    69 0000006F FFCA                        dec edx ;Dec the count to balance the below (as we searched thru spaces)
+    70                                  endOfCmdLine:
+    71 00000071 FFC2                        inc edx ;Add one more char which we are about to terminate
+    72 00000073 C60700                      mov byte [rdi], 0   ;Store a final null over terminating 0Dh
+    73 00000076 488915(00000000)            mov qword [_argc], rdx  ;Save the number of arguments we have
+    74 0000007D B800480000                  mov eax, 0x4800
+    75 00000082 488D1CD511000000            lea rbx, qword [8*rdx + 0x11] ;Get the number of bytes to allocate
+    76 0000008A 48C1EB04                    shr rbx, 4  ;Divide by 16 to get number of paragraphs
+    77 0000008E CD41                        int 41h
+    78 00000090 7272                        jc exitBad
+    79 00000092 4889C5                      mov rbp, rax    ;Store the ptr to the array here
+    80                                  ;argv array must have a qword at _argv[_argc] = 0
+    81 00000095 48892D(00000000)            mov qword [_argv], rbp  ;Save the ptr to the char* array
+    82                                  
+    83 0000009C 4889F7                      mov rdi, rsi    ;Get the start of the command line string into rdi
+    84 0000009F 31D2                        xor edx, edx    ;Zero the offset register
+    85 000000A1 31C9                        xor ecx, ecx
+    86 000000A3 FFC9                        dec ecx         ;Get -1 in ecx
+    87 000000A5 31C0                        xor eax, eax    ;Scan for nulls
+    88 000000A7 B420                        mov ah, " "     ;Prepare for space scanning
+    89                                  buildArgv:
+    90 000000A9 48897CD500                  mov qword [rbp + 8*rdx], rdi  ;Save rdi as the ptr to the string
+    91 000000AE F2AE                        repne scasb   ;Scan for the terminating null
+    92 000000B0 86C4                        xchg al, ah 
+    93 000000B2 F3AE                        repe scasb    ;Scan through the spaces to char 1 of the string
+    94 000000B4 48FFCF                      dec rdi     ;Go back to the first char since scasb goes to next char
+    95 000000B7 86C4                        xchg al, ah
+    96 000000B9 FFC2                        inc edx
+    97 000000BB 483B15(00000000)            cmp rdx, qword [_argc]  ;Are we equal yet?
+    98 000000C2 75E5                        jne buildArgv
+    99 000000C4 31C0                        xor eax, eax
+   100 000000C6 488944D500                  mov qword [rbp + 8*rdx], rax    ;Store a ptr to NULL
+   101 000000CB 488B0D(00000000)            mov rcx, qword [_argc]  ;Get the regs in for the calling convention
+   102 000000D2 488B15(00000000)            mov rdx, qword [_argv]  ;Get the regs in for the calling convention
+   103 000000D9 4C8B05(00000000)            mov r8, qword [_env]    ;Get the optional, UNPARSED environment
+   104                                      ;We pass a ptr to the environment but it is unparsed as ANSI doesn't 
+   105                                      ; request this!
+   106                                  ;Step 3) 
+   107 000000E0 E8(00000000)                call main
+   108                                  ;Step 4)
+   109 000000E5 4C8B05(00000000)            mov r8, qword [_argv]   ;Get the pointer to free this block
+   110 000000EC B800490000                  mov eax, 0x4900 ;Explicitly try to free
+   111 000000F1 CD41                        int 0x41
+   112                                  exitCommon:
+   113 000000F3 B9FF000000                  mov ecx, 0xFF
+   114 000000F8 39C8                        cmp eax, ecx
+   115 000000FA 0F47C1                      cmova eax, ecx 
+   116 000000FD 0D004C0000                  or eax, 0x4C00  ;Add the exit code into AH w/o stall
+   117 00000102 CD41                        int 0x41 ;Return to DOS
+   118                                  ;If there is an allocation error, exit
+   119                                  exitBad:
+   120 00000104 488D150E000000              lea rdx, badMemStr
+   121 0000010B B800090000                  mov eax, 0x0900
+   122 00000110 CD41                        int 0x41
+   123 00000112 B8FF000000                  mov eax, 0xFF
+   124 00000117 EBDA                        jmp short exitCommon
+   125 00000119 4352543A204E6F7420-     badMemStr db "CRT: Not enough memory",0Ah,0Dh,"$"
+   125 00000122 656E6F756768206D65-
+   125 0000012B 6D6F72790A0D24     
+   126                                  ;GCC provides a call to this main constructor. Since we 
+   127                                  ; setup everything in assembly in CRT0, we don't need this.
+   128                                  __main:
+   129 00000132 C3                          ret

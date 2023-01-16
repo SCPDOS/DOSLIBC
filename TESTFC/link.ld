@@ -2,7 +2,7 @@ OUTPUT_ARCH(i386:x86-64)
 OUTPUT_FORMAT("pei-x86-64")
 OUTPUT(./out/bin/main.bin)
 STARTUP(./../CRT0/out/lib/crt0.lib)
-ENTRY(start)
+ENTRY(__start__)
 SECTIONS
 {
   . = __ImageBase + 0x1000;
