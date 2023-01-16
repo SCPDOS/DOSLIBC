@@ -20,13 +20,13 @@
 #define _STDLIB_H
 
 //ANSI Headers
-#include "./std/float.h"
-#include "./std/limits.h"
-#include "./std/iso646.h"
-#include "./std/stdarg.h"
-#include "./std/stddef.h"
+#include "./float.h"
+#include "./limits.h"
+#include "./iso646.h"
+#include "./stdarg.h"
+#include "./stddef.h"
 //C99 Headers
-#include "./std/stdbool.h"
-#include "./std/stdint.h"
+#include "./stdbool.h"
+#include "./stdint.h"
 
 #endif

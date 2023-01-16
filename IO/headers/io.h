@@ -16,6 +16,7 @@ int _open(const char *filename, int oflag); //-1 if error, fd otherwise.
 int _read(int const fd, const void *buffer, unsigned const count); //Returns number of bytes read or -1 on error
 long _tell(int fd); //Returns the current position in the file or -1 on error.
 int _umask(int pmode); //Returns the previous pmode
-int _write(int fd, const void *buffer, unsigned int count);
+int _write(int fd, const void *buffer, unsigned int count); //Returns number of bytes written or -1 on error
+int _get_io_error(); // Get last IO error code
 
 #endif

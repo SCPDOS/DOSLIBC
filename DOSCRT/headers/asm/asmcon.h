@@ -2,7 +2,7 @@
 #ifndef _ASMCON_H
 #define _ASMCON_H
 
-#include "../../scpdos.h"
+#include "../scpdos.h"
 
 CHAR DOSAPI GetCharA();
 VOID DOSAPI PutCharA(CHAR c);

@@ -1,0 +1,13 @@
+You can link any file using the setup in this makefile with any library we have here.
+BREAK currently only does something with GCC and will be later removed and is thus
+not mentioned here.
+
+You may use the following headers: 
+    - stdlib.h, A Freestanding implementation
+    - Any freestanding header, contained in STDLIB
+    - io.h, A POSIX compliant low level io library
+    - scpdos.h, A windows.h like low level operating system interface
+
+You may link with the following libraries:
+    - io.lib
+    - scpdos.lib

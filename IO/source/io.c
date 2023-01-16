@@ -1,5 +1,6 @@
 #include "../headers/io.h"
 
+//GLOBAL VARIABLES
 int umask = 0;   //Global variable which masks which bits we can set 
 
 int _close(int fd){
@@ -105,4 +106,9 @@ int _write(int fd, const void *buffer, unsigned int count){
         retVal = -1;
     }
     return retVal;
+}
+
+//This isn't standardly defined!
+int _get_io_error(){
+    return (int)GetLastError();
 }

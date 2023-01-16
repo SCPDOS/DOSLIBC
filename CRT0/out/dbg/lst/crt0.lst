@@ -30,7 +30,7 @@
     30                                  start:
     31                                  ;Step 1)
     32                                  ;BREAKPOINT BREAKPOINT BREAKPOINT BREAKPOINT 
-    33                                      ;xchg bx, bx
+    33                                     ;xchg bx, bx
     34                                  ;BREAKPOINT BREAKPOINT BREAKPOINT BREAKPOINT 
     35 00000000 4889E0                      mov rax, rsp
     36 00000003 48C1E805                    shr rax, 5  ;Divide by 16
@@ -62,33 +62,31 @@
     60 00000053 B020                        mov al, " " ;Search for space
     61                                  scanLp:
     62 00000055 F2AE                        repne scasb
-    63 00000057 807FFF0D                    cmp byte [rdi - 1], 0x0D    ;Are we at terminating char?
-    64 0000005B 7413                        je step4
-    65 0000005D 67E310                      jecxz step4 ;No more chars, exit
-    66 00000060 F3AE                        repe scasb  ;Skip all the spaces
-    67 00000062 67E30B                      jecxz step4
-    68                                      ;rdi points to the char after the first non-space
-    69 00000065 48FFCF                      dec rdi ;Go to the first non-space char
-    70 00000068 C647FF00                    mov byte [rdi - 1], 0   ;Replace the last space with a null
-    71 0000006C FFC2                        inc edx ;One more char processed
-    72 0000006E EBE5                        jmp short scanLp 
-    73                                  step4:
-    74                                  ;Step 4) 
-    75 00000070 C647FF00                    mov byte [rdi - 1], 0   ;Store a final terminating null
-    76 00000074 FFC2                        inc edx ;Add one more (if none, for cmdname)
-    77 00000076 89D1                        mov ecx, edx
-    78 00000078 5A                          pop rdx ;Pop the pointer back
-    79 00000079 48890D(00000000)            mov qword [_argc], rcx
-    80 00000080 488915(00000000)            mov qword [_argv], rdx
-    81 00000087 E8(00000000)                call main
-    82                                  ;Step 5)
-    83 0000008C B9FF000000                  mov ecx, 0xFF
-    84 00000091 39C8                        cmp eax, ecx
-    85 00000093 0F47C1                      cmova eax, ecx 
-    86 00000096 0D004C0000                  or eax, 0x4C00  ;Add the exit code into AH w/o stall
-    87 0000009B CD41                        int 0x41 ;Return to DOS
-    88                                  
-    89                                  ;This symbol is a temporary solution to an awkward GCC behaviour
-    90                                  ; where it just decides to call this from within main.
-    91                                  __main:
-    92 0000009D C3                          ret
+    63 00000057 67E310                      jecxz step4 ;No more chars, exit
+    64 0000005A F3AE                        repe scasb  ;Skip all the spaces
+    65 0000005C 67E30B                      jecxz step4
+    66                                      ;rdi points to the char after the first non-space
+    67 0000005F 48FFCF                      dec rdi ;Go to the first non-space char
+    68 00000062 C647FF00                    mov byte [rdi - 1], 0   ;Replace the last space with a null
+    69 00000066 FFC2                        inc edx ;One more char processed
+    70 00000068 EBEB                        jmp short scanLp 
+    71                                  step4:
+    72                                  ;Step 4) 
+    73 0000006A C60700                      mov byte [rdi], 0   ;Store a final terminating null
+    74 0000006D FFC2                        inc edx ;Add one more (if none, for cmdname)
+    75 0000006F 89D1                        mov ecx, edx
+    76 00000071 5A                          pop rdx ;Pop the pointer back
+    77 00000072 48890D(00000000)            mov qword [_argc], rcx
+    78 00000079 488915(00000000)            mov qword [_argv], rdx
+    79 00000080 E8(00000000)                call main
+    80                                  ;Step 5)
+    81 00000085 B9FF000000                  mov ecx, 0xFF
+    82 0000008A 39C8                        cmp eax, ecx
+    83 0000008C 0F47C1                      cmova eax, ecx 
+    84 0000008F 0D004C0000                  or eax, 0x4C00  ;Add the exit code into AH w/o stall
+    85 00000094 CD41                        int 0x41 ;Return to DOS
+    86                                  
+    87                                  ;This symbol is a temporary solution to an awkward GCC behaviour
+    88                                  ; where it just decides to call this from within main.
+    89                                  __main:
+    90 00000096 C3                          ret

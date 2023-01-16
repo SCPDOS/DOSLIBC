@@ -30,7 +30,7 @@ global __main
 start:
 ;Step 1)
 ;BREAKPOINT BREAKPOINT BREAKPOINT BREAKPOINT 
-    ;xchg bx, bx
+   ;xchg bx, bx
 ;BREAKPOINT BREAKPOINT BREAKPOINT BREAKPOINT 
     mov rax, rsp
     shr rax, 5  ;Divide by 16
@@ -60,8 +60,6 @@ start:
     mov al, " " ;Search for space
 scanLp:
     repne scasb
-    cmp byte [rdi - 1], 0x0D    ;Are we at terminating char?
-    je step4
     jecxz step4 ;No more chars, exit
     repe scasb  ;Skip all the spaces
     jecxz step4
@@ -72,7 +70,7 @@ scanLp:
     jmp short scanLp 
 step4:
 ;Step 4) 
-    mov byte [rdi - 1], 0   ;Store a final terminating null
+    mov byte [rdi], 0   ;Store a final terminating null
     inc edx ;Add one more (if none, for cmdname)
     mov ecx, edx
     pop rdx ;Pop the pointer back
