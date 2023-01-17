@@ -32,7 +32,9 @@ LINK_SCRIPT:= /PATH/TO/LINK/SCRIPT
 build:
 	${COMPILER} ${TGT_CCFLAGS} -c ${SRC_PATH}/${TGT_NAME}.c -o ${BIN_PATH}/${TGT_NAME}.obj
 
-	${LINKER} ${LD_FLAGS} -o ${BIN_PATH}/${OUT_FILE} ${BIN_PATH}/${TGT_NAME}.obj ${IO_LIB} ${DBG_LIB}
+	${LINKER} ${LD_FLAGS} -o ${BIN_PATH}/${OUT_FILE} ${BIN_PATH}/${TGT_NAME}.obj ${IO_LIB} 
+
+#Add this to the above line when enabling bochs debuger ${DBG_LIB}
 
 clean:
 #Using the @ symbol suppresses echoing to the console. @echo "" inserts a new line between the command and the returned prompt

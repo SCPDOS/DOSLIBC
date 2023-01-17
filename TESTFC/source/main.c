@@ -1,6 +1,6 @@
 #include <scpdos.h>
 #include "../../IO/headers/io.h"
-#include "../../BREAK/headers/bochs.h"
+//#include "../../BREAK/headers/bochs.h"
 
 #define DTALEN 128 /*Data Transfer Area Length => Length of the data transfer buffer. Defining a macro to define this "constant"*/
 
@@ -22,8 +22,6 @@ char buffer2[DTALEN];
 
 /* Messages */
 char* paramString = "\r\n usage: fc [drive:]pathname1 [drive:]pathname2 \r\n";
-char* defPath1 = "A:\\TST.EXE";
-char* defPath2 = "A:\\RDEBUG.COM";
 
 int main(int argc, char** argv)
 {
@@ -32,23 +30,15 @@ int main(int argc, char** argv)
 	/*Create two pointers for the filenames*/
 	char* pathspec1;
 	char* pathspec2;
-	if (argc == 1 || argc > 2)
+	if (argc != 2)
 	{
 		writeCon(paramString);
 		retVal = -1;    /*Error exit*/
 	}
 	else
 	{
-		if (argc == 2) 
-		{
-			pathspec1 = argv[1];
-			pathspec2 = argv[2];
-		}
-		else 
-		{	/*Couple of default paths*/
-			pathspec1 = defPath1;
-			pathspec2 = defPath2;
-		}
+		pathspec1 = argv[1];
+		pathspec2 = argv[2];
 
 		int fHdl1 = -1;
 		int fHdl2 = -1; 
@@ -79,7 +69,7 @@ int main(int argc, char** argv)
 			{
 				int readChars1 = -1;
 				int readChars2 = -1;
-				//bochsBreak();
+
 				readChars1 = readFile(fHdl1, buffer1, DTALEN);
 				if (readChars1 == -1)
 				{
