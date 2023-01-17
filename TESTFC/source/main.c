@@ -27,7 +27,6 @@ char* defPath2 = "A:\\RDEBUG.COM";
 
 int main(int argc, char** argv)
 {
-	bochsBreak();
 	argc -= 1; /*Get rid of initial argument (filename) from count*/
 	int retVal = 0;
 	/*Create two pointers for the filenames*/
@@ -80,7 +79,7 @@ int main(int argc, char** argv)
 			{
 				int readChars1 = -1;
 				int readChars2 = -1;
-
+				//bochsBreak();
 				readChars1 = readFile(fHdl1, buffer1, DTALEN);
 				if (readChars1 == -1)
 				{

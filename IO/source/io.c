@@ -70,10 +70,10 @@ int _read(int const fd, const void *buffer, unsigned const count){
     //Returns number of bytes read or -1 on error
     //BOOL DOSAPI ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead,  LPDWORD lpNumberOfBytesRead)
     int retVal = 0;
-    LPDWORD bytesRead = NULL;
-    retVal = (int)ReadFile((HANDLE)fd, (LPVOID)buffer, (DWORD)count, bytesRead);
-    if (!retVal){
-        retVal = *bytesRead;    //Get the stored value
+    DWORD bytesRead = 0;
+    retVal = (int)ReadFile((HANDLE)fd, (LPVOID)buffer, (DWORD)count, &bytesRead);
+    if (retVal){
+        retVal = bytesRead;    //Get the stored value
     }
     else{
         retVal = -1;
@@ -97,10 +97,10 @@ int _write(int fd, const void *buffer, unsigned int count){
     //Returns number of bytes written or -1 on error
     //BOOL DOSAPI ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead,  LPDWORD lpNumberOfBytesRead)
     int retVal = 0;
-    LPDWORD bytesWritten = NULL;
-    retVal = (int)WriteFile((HANDLE)fd, (LPVOID)buffer, (DWORD)count, bytesWritten);
-    if (!retVal){
-        retVal = *bytesWritten;    //Get the stored value
+    DWORD bytesWritten = 0;
+    retVal = (int)WriteFile((HANDLE)fd, (LPVOID)buffer, (DWORD)count, &bytesWritten);
+    if (retVal){
+        retVal = bytesWritten;    //Get the stored value
     }
     else{
         retVal = -1;

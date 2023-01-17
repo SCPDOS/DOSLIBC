@@ -47,16 +47,16 @@ LOAD ./../CRT0/out/lib/crt0.lib
  *fill*         0x0000000000401133        0xd 
  .text          0x0000000000401140      0x5c0 ./out/bin/main.obj
                 0x0000000000401140                main
-                0x0000000000401456                printErrorMsg
-                0x00000000004014e9                openFile
-                0x0000000000401509                closeFile
-                0x0000000000401522                readFile
-                0x0000000000401550                writeFile
-                0x000000000040157e                writeCon
-                0x00000000004015b1                scanChar
-                0x00000000004015f3                strlen
-                0x0000000000401625                writeByteAtCursor
-                0x000000000040169c                writeDwordAtCursor
+                0x0000000000401451                printErrorMsg
+                0x00000000004014e4                openFile
+                0x0000000000401504                closeFile
+                0x000000000040151d                readFile
+                0x000000000040154b                writeFile
+                0x0000000000401579                writeCon
+                0x00000000004015ac                scanChar
+                0x00000000004015ee                strlen
+                0x0000000000401620                writeByteAtCursor
+                0x0000000000401697                writeDwordAtCursor
  .text          0x0000000000401700      0x330 ./../IO/./out/lib/io.lib(io.o)
                 0x0000000000401700                _close
                 0x000000000040171e                _commit
@@ -67,10 +67,10 @@ LOAD ./../CRT0/out/lib/crt0.lib
                 0x0000000000401872                _lseek
                 0x00000000004018c9                _open
                 0x00000000004018f2                _read
-                0x000000000040195c                _tell
-                0x0000000000401985                _umask
-                0x00000000004019b0                _write
-                0x0000000000401a1a                _get_io_error
+                0x0000000000401958                _tell
+                0x0000000000401981                _umask
+                0x00000000004019ac                _write
+                0x0000000000401a12                _get_io_error
  .text          0x0000000000401a30      0xb90 ./../IO/./out/lib/io.lib(scpdos.lib)
                 0x0000000000401a30                SetInterruptVector
                 0x0000000000401a45                GetInterruptVector
