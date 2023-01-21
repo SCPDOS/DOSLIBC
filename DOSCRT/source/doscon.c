@@ -127,6 +127,7 @@ VOID DOSAPI __WriteString(LPCSTR lpString, int len) {
 	ASM
 		"push rbx \n\t"
 		"xor ebx, ebx \n\t"
+		"inc ebx \n\t"
 		"xchg rdx, rcx \n\t"
 		"mov eax, 0x4000 \n\t"
 		"int 0x41 \n\t"

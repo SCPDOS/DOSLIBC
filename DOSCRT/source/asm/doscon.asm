@@ -77,6 +77,7 @@ ConInputA ENDP
 __WriteStringA PROC PUBLIC
     push rbx
     xor ebx, ebx 
+    inc ebx
     xchg rdx, rcx 
     mov eax, 4000h
     int 41h
