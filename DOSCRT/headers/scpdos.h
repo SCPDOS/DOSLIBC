@@ -24,8 +24,8 @@
 #pragma pack(pop)
 
 //Export the global runtime vars
-LPCVOID _env;
-LPCVOID _argc;
-LPCVOID _argv;
+EXTERN LPCVOID _env;
+EXTERN LPCVOID _argc;
+EXTERN LPCVOID _argv;
 
 #endif

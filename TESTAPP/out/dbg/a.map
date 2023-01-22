@@ -116,66 +116,54 @@ LOAD ./../CRT0/out/lib/crt0.lib
                 0x0000000000401b21                DirectConIn
                 0x0000000000401b32                ConInput
                 0x0000000000401b43                __WriteString
-                0x0000000000401b5f                WriteString
-                0x0000000000401bbe                __GetBufferedInput
-                0x0000000000401bd3                GetBufferedInput
-                0x0000000000401c11                GetConInputStatus
-                0x0000000000401c21                ClearInputBuffer
-                0x0000000000401c2f                GetDate
-                0x0000000000401c64                SetDate
-                0x0000000000401c8c                GetTime
-                0x0000000000401cc0                SetTime
-                0x0000000000401cf8                GetCountryInformation
- .text          0x0000000000401d10       0x10 ./../BREAK/./out/lib/bochs.lib
-                0x0000000000401d10                bochsBreak
+                0x0000000000401b61                WriteString
+                0x0000000000401bc0                __GetBufferedInput
+                0x0000000000401bd5                GetBufferedInput
+                0x0000000000401c13                GetConInputStatus
+                0x0000000000401c23                ClearInputBuffer
+                0x0000000000401c31                GetDate
+                0x0000000000401c66                SetDate
+                0x0000000000401c8e                GetTime
+                0x0000000000401cc2                SetTime
+                0x0000000000401cfa                GetCountryInformation
 
 .rdata          0x0000000000402000      0x200 load address 0x0000000000002000
  .rdata         0x0000000000402000       0x10 ./out/bin/main.obj
  .rdata$zzz     0x0000000000402010       0x20 ./out/bin/main.obj
  .rdata$zzz     0x0000000000402030       0x20 ./../DOSCRT/./out/lib/scpdos.lib
- .rdata$zzz     0x0000000000402050       0x20 ./../BREAK/./out/lib/bochs.lib
 
 .xdata          0x0000000000403000      0x400 load address 0x0000000000003000
  .xdata         0x0000000000403000        0xc ./out/bin/main.obj
  .xdata         0x000000000040300c      0x300 ./../DOSCRT/./out/lib/scpdos.lib
- .xdata         0x000000000040330c        0x8 ./../BREAK/./out/lib/bochs.lib
 
 .pdata          0x0000000000404000      0x600 load address 0x0000000000004000
  .pdata         0x0000000000404000        0xc ./out/bin/main.obj
  .pdata         0x000000000040400c      0x438 ./../DOSCRT/./out/lib/scpdos.lib
- .pdata         0x0000000000404444        0xc ./../BREAK/./out/lib/bochs.lib
 
 .data           0x0000000000404450        0x0 load address 0x0000000000004450
  *(.data)
  .data          0x0000000000404450        0x0 ./out/bin/main.obj
  .data          0x0000000000404450        0x0 ./../DOSCRT/./out/lib/scpdos.lib
- .data          0x0000000000404450        0x0 ./../BREAK/./out/lib/bochs.lib
 
-.drectve        0x0000000000405000      0x200 load address 0x0000000000005000
- .drectve       0x0000000000405000       0x40 ./out/bin/main.obj
-
-.reloc          0x0000000000406000      0x200 load address 0x0000000000006000
- .reloc         0x0000000000406000        0xc dll stuff
+.reloc          0x0000000000405000      0x200 load address 0x0000000000005000
+ .reloc         0x0000000000405000        0xc dll stuff
 
 .rodata
  *(.rodata)
 
-.bss            0x0000000000406010       0x20 load address 0x0000000000006010
-                0x0000000000406010                _BSS_START_ = .
+.bss            0x0000000000405010       0x20 load address 0x0000000000005010
+                0x0000000000405010                _BSS_START_ = .
  *(.bss)
- .bss           0x0000000000406010        0x0 ./out/bin/main.obj
- .bss           0x0000000000406010       0x20 ./../DOSCRT/./out/lib/scpdos.lib
-                0x0000000000406010                _env
-                0x0000000000406018                _argc
-                0x0000000000406020                _argv
- .bss           0x0000000000406030        0x0 ./../BREAK/./out/lib/bochs.lib
+ .bss           0x0000000000405010        0x0 ./out/bin/main.obj
+ .bss           0x0000000000405010       0x20 ./../DOSCRT/./out/lib/scpdos.lib
+                0x0000000000405010                _env
+                0x0000000000405018                _argc
+                0x0000000000405020                _argv
  *(COMMON)
- COMMON         0x0000000000406030        0x0 ./out/bin/main.obj
  *(.bss*)
  *(.stack)
-                0x0000000000406030                _BSS_END_ = .
+                0x0000000000405030                _BSS_END_ = .
 LOAD ./out/bin/main.obj
 LOAD ./../DOSCRT/./out/lib/scpdos.lib
-LOAD ./../BREAK/./out/lib/bochs.lib
 OUTPUT(./out/bin/a.exe pei-x86-64)
 LOAD dll stuff
