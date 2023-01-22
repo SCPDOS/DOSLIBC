@@ -5,12 +5,6 @@ Archive member included to satisfy reference by file (symbol)
 ./../IO/./out/lib/io.lib(scpdos.lib)
                               ./../IO/./out/lib/io.lib(io.o) (GetLastError)
 
-Allocating common symbols
-Common symbol       size              file
-
-buffer2             0x80              ./out/bin/main.obj
-buffer1             0x80              ./out/bin/main.obj
-
 Memory Configuration
 
 Name             Origin             Length             Attributes
@@ -152,16 +146,16 @@ LOAD ./../CRT0/out/lib/crt0.lib
                 0x00000000004023b1                DirectConIn
                 0x00000000004023c2                ConInput
                 0x00000000004023d3                __WriteString
-                0x00000000004023ef                WriteString
-                0x000000000040244e                __GetBufferedInput
-                0x0000000000402463                GetBufferedInput
-                0x00000000004024a1                GetConInputStatus
-                0x00000000004024b1                ClearInputBuffer
-                0x00000000004024bf                GetDate
-                0x00000000004024f4                SetDate
-                0x000000000040251c                GetTime
-                0x0000000000402550                SetTime
-                0x0000000000402588                GetCountryInformation
+                0x00000000004023f1                WriteString
+                0x0000000000402450                __GetBufferedInput
+                0x0000000000402465                GetBufferedInput
+                0x00000000004024a3                GetConInputStatus
+                0x00000000004024b3                ClearInputBuffer
+                0x00000000004024c1                GetDate
+                0x00000000004024f6                SetDate
+                0x000000000040251e                GetTime
+                0x0000000000402552                SetTime
+                0x000000000040258a                GetCountryInformation
 
 .rdata          0x0000000000403000      0x200 load address 0x0000000000003000
  .rdata         0x0000000000403000      0x1a0 ./out/bin/main.obj
@@ -186,34 +180,29 @@ LOAD ./../CRT0/out/lib/crt0.lib
  .data          0x0000000000405570        0x0 ./../IO/./out/lib/io.lib(io.o)
  .data          0x0000000000405570        0x0 ./../IO/./out/lib/io.lib(scpdos.lib)
 
-.drectve        0x0000000000406000      0x200 load address 0x0000000000006000
- .drectve       0x0000000000406000       0x6c ./out/bin/main.obj
- .drectve       0x000000000040606c       0x40 ./../IO/./out/lib/io.lib(io.o)
-
-.reloc          0x0000000000407000      0x200 load address 0x0000000000007000
- .reloc         0x0000000000407000       0x18 dll stuff
+.reloc          0x0000000000406000      0x200 load address 0x0000000000006000
+ .reloc         0x0000000000406000       0x18 dll stuff
 
 .rodata
  *(.rodata)
 
-.bss            0x0000000000407020      0x140 load address 0x0000000000007020
-                0x0000000000407020                _BSS_START_ = .
+.bss            0x0000000000406020      0x150 load address 0x0000000000006020
+                0x0000000000406020                _BSS_START_ = .
  *(.bss)
- .bss           0x0000000000407020       0x10 ./out/bin/main.obj
-                0x0000000000407020                switchFlags
- .bss           0x0000000000407030       0x10 ./../IO/./out/lib/io.lib(io.o)
-                0x0000000000407030                umask
- .bss           0x0000000000407040       0x20 ./../IO/./out/lib/io.lib(scpdos.lib)
-                0x0000000000407040                _env
-                0x0000000000407048                _argc
-                0x0000000000407050                _argv
+ .bss           0x0000000000406020      0x120 ./out/bin/main.obj
+                0x0000000000406020                switchFlags
+                0x0000000000406040                buffer1
+                0x00000000004060c0                buffer2
+ .bss           0x0000000000406140       0x10 ./../IO/./out/lib/io.lib(io.o)
+                0x0000000000406140                umask
+ .bss           0x0000000000406150       0x20 ./../IO/./out/lib/io.lib(scpdos.lib)
+                0x0000000000406150                _env
+                0x0000000000406158                _argc
+                0x0000000000406160                _argv
  *(COMMON)
- COMMON         0x0000000000407060      0x100 ./out/bin/main.obj
-                0x0000000000407060                buffer2
-                0x00000000004070e0                buffer1
  *(.bss*)
  *(.stack)
-                0x0000000000407160                _BSS_END_ = .
+                0x0000000000406170                _BSS_END_ = .
 LOAD ./out/bin/main.obj
 LOAD ./../IO/./out/lib/io.lib
 OUTPUT(./out/bin/fc.exe pei-x86-64)
