@@ -63,13 +63,14 @@ makeCstrings:
     inc edx ;One more string processed
     repe scasb  ;Skip all the spaces
     test ecx, ecx
-    jnz makeCstrings
+    jnz short makeCstrings
     cmp byte [rdi - 1], " "
-    jne endOfCmdLine    ;If the last char was not a space, skip the dec
+    jne short endOfCmdLine    ;If the last char was not a space, skip the dec
     dec edx ;Dec the count to balance the below (as we searched thru spaces)
 endOfCmdLine:
     inc edx ;Add one more char which we are about to terminate
     mov byte [rdi], 0   ;Store a final null over terminating 0Dh
+    inc edx ;Add one more entry to argv for the command line itself
     mov qword [_argc], rdx  ;Save the number of arguments we have
     mov eax, 0x4800
     lea rbx, qword [8*rdx + 0x11] ;Get the number of bytes to allocate
@@ -79,9 +80,15 @@ endOfCmdLine:
     mov rbp, rax    ;Store the ptr to the array here
 ;argv array must have a qword at _argv[_argc] = 0
     mov qword [_argv], rbp  ;Save the ptr to the char* array
-
+;Place pointer to filename in argv array
+    mov eax, 6102h  ;Get FQN pointer in rdx
+    int 41h
+    mov qword [rbp], rdx    ;Store the name pointer here
+    cmp rdx, qword [_argc]  ;Are we equal yet?
+    je short endArgv
+;Get pointers to the ASCIIZ command line arguments for argv
     mov rdi, rsi    ;Get the start of the command line string into rdi
-    xor edx, edx    ;Zero the offset register
+    mov rdx, 1      ;Go to the first entry
     xor ecx, ecx
     dec ecx         ;Get -1 in ecx
     xor eax, eax    ;Scan for nulls
@@ -95,7 +102,8 @@ buildArgv:
     xchg al, ah
     inc edx
     cmp rdx, qword [_argc]  ;Are we equal yet?
-    jne buildArgv
+    jne short buildArgv
+endArgv:
     xor eax, eax
     mov qword [rbp + 8*rdx], rax    ;Store a ptr to NULL
     mov rcx, qword [_argc]  ;Get the regs in for the calling convention
