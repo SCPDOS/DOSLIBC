@@ -13,7 +13,7 @@ BOOL DOSAPI ExecProcess(LPCSTR lpProcessName, LPEPB lpExecuteParameterBlock){
         "mov rdx, rcx\n\t"
         "mov eax, 0x4B00\n\t"
         "xor ecx, ecx\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "mov eax, 1\n\t"
         "cmovc eax, ecx\n\t"
         "pop rbx\n\t"
@@ -32,7 +32,7 @@ BOOL DOSAPI LoadProcess(LPCSTR lpProcessName, LPLPB lpLoadParameterBlock){
         "mov rdx, rcx\n\t"
         "mov eax, 0x4B01\n\t"
         "xor ecx, ecx\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "mov eax, 1\n\t"
         "cmovc eax, ecx\n\t"
         "pop rbx\n\t"
@@ -51,7 +51,7 @@ BOOL DOSAPI LoadOverlay(LPCSTR lpOverlayName, LPLOB lpLoadOverlayBlock){
         "mov rdx, rcx\n\t"
         "mov eax, 0x4B03\n\t"
         "xor ecx, ecx\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "mov eax, 1\n\t"
         "cmovc eax, ecx\n\t"
         "pop rbx\n\t"
@@ -66,7 +66,7 @@ VOID DOSAPI ExitProcess(BYTE bExitCode){
     ASM
         "mov eax, 0x4C00\n\t"
         "mov al, cl\n\t"
-        "int 0x41"
+        "int 0x21"
     END_ASM
 #else
     //ExitProcessA(bExitCode);
@@ -78,7 +78,7 @@ VOID DOSAPI ExitProcessAndStayResidentP(BYTE bExitCode, DWORD dwParagraphsToRese
     ASM
         "mov eax, 0x3100\n\t"
         "mov al, cl\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
     END_ASM
 #else
     //ExitProcessAndStayResidentPA(bExitCode, dwParagraphsToReserve);
@@ -89,7 +89,7 @@ VOID DOSAPI ExitProcessAndStayResidentB(DWORD dwBytesToReserve){
 #if INLINE_ASM
     ASM
         "mov edx, ecx\n\t"
-        "int 0x47"
+        "int 0x27"
     END_ASM
 #else
     //ExitProcessAndStayResidentBA(dwBytesToReserve);
@@ -102,7 +102,7 @@ RETURN_CODE DOSAPI GetExitCodeProcess(){
 #if INLINE_ASM
     ASM
         "mov eax, 0x4D00\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
     END_ASM   
 #else
     //return GetExitCodeProcessA();

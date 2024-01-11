@@ -9,7 +9,7 @@ VOID DOSAPI __setDTA(LPVOID lpDTA){
     ASM
         "mov rdx, rcx\n\t"
         "mov eax, 0x1A00\n\t"
-        "int 0x41"
+        "int 0x21"
     END_ASM
 #else
     //__setDTAA(lpDTA);
@@ -21,7 +21,7 @@ LPVOID DOSAPI __getDTA(){
     ASM
         "push rbx\n\t"
         "mov eax, 0x2F00\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "mov rax, rbx\n\t"
         "pop rbx"
     END_ASM
@@ -42,7 +42,7 @@ CHAR DOSAPI ParseFileName(LPCSTR lpFileName, LPFCB lpFCB, PARSE_MODE pm){
         "mov rdi, rdx\n\t"
         "mov eax, 0x2900\n\t"
         "mov al, r8b\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
     END_ASM
 #else
     //return ParseFileNameA(lpFileName, lpFCB, pm);

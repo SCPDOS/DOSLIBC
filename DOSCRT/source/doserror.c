@@ -15,7 +15,7 @@ VOID DOSAPI __getErrorInformation(LPWORD lpExtErrorCode, LPBYTE lpErrorClass, LP
         "push r10\n\t"
         "mov r10, rcx\n\t"
         "mov eax, 0x5900\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "mov word ptr [r10], ax\n\t"
         "mov byte ptr [rdx], bh\n\t"
         "mov byte ptr [r8], bl\n\t"

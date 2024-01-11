@@ -12,7 +12,7 @@ LPVOID DOSAPI __AllocateMemory(SIZE_T dwNumberOfParagraphs){
         "mov ebx, ecx\n\t"
         "xor ecx, ecx\n\t"
         "mov eax, 0x4800\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "cmovc eax, ecx\n\t"
         "pop rbx"
     END_ASM
@@ -27,7 +27,7 @@ BOOL DOSAPI __FreeMemory(LPVOID lpAddress){
         "mov r8, rcx\n\t"
         "mov eax, 0x4900\n\t"
         "xor ecx, ecx\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "mov eax, 1\n\t"
         "cmovc eax, ecx"
     END_ASM
@@ -44,7 +44,7 @@ BOOL DOSAPI __ReallocateMemory(LPVOID lpAddress, SIZE_T dwNumberOfParagraphs){
         "mov ebx, edx\n\t"
         "xor ecx, ecx\n\t"
         "mov eax, 0x4A00\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "mov eax, 1\n\t"
         "cmovc eax, ecx"
     END_ASM
@@ -87,7 +87,7 @@ BYTE DOSAPI GetMemoryAllocationStrategy(){
 #if INLINE_ASM
     ASM
         "mov eax, 0x5800\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
     END_ASM
 #else
     //return GetMemoryAllocationStrategyA();
@@ -102,7 +102,7 @@ BOOL DOSAPI SetMemoryAllocationStrategy(BYTE bAllocationStrategy){
         "mov ebx, ecx\n\t"
         "xor ecx, ecx\n\t"
         "mov eax, 0x5801\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "mov eax, 1\n\t"
         "cmovc eax, ecx"
     END_ASM

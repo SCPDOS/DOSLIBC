@@ -13,7 +13,7 @@ VOID DOSAPI GetDate(LPCH lpDayOfTheWeek, LPWORD lpYearOffset, LPCH lpMonth, LPCH
         "mov rsi, rcx\n\t"
         "mov rdi, rdx\n\t"
         "mov eax,0x2A00\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "mov byte ptr [rsi], al\n\t"
         "mov word ptr [rdi], cx\n\t"
         "mov al, dh\n\t"
@@ -33,7 +33,7 @@ BOOL DOSAPI SetDate(WORD year, CHAR month, CHAR day){
         "mov dh, dl\n\t"
         "mov dl, r8b\n\t"
         "mov eax, 0x2B00\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "inc eax"
     END_ASM
 #else
@@ -49,7 +49,7 @@ VOID DOSAPI GetTime(LPCH lpHour, LPCH lpMinute, LPCH lpSeconds, LPCH lpHSeconds)
         "mov rsi, rcx\n\t"
         "mov rdi, rdx\n\t"
         "mov eax,0x2C00\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "mov byte ptr [rsi], ch\n\t"
         "mov byte ptr [rdi], cl\n\t"
         "mov al, dh\n\t"
@@ -72,7 +72,7 @@ BOOL DOSAPI SetTime(CHAR hour, CHAR minute, CHAR seconds, CHAR hSeconds){
         "mov dh, dl\n\t"
         "mov dl, r9b\n\t"
         "mov eax, 0x2D00\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "inc eax"
     END_ASM
 #else

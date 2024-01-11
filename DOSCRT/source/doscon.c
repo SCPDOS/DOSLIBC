@@ -8,7 +8,7 @@ CHAR DOSAPI GetChar() {
 #if INLINE_ASM
 	ASM
 		"mov eax, 0x0100\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"movzx eax, al"
 		END_ASM
 #else
@@ -21,7 +21,7 @@ VOID DOSAPI PutChar(CHAR c) {
 	ASM
 		"movzx edx, cl\n\t"
 		"mov eax, 0x0200\n\t"
-		"int 0x41"
+		"int 0x21"
 		END_ASM
 #else
 	PutCharA(c);
@@ -32,7 +32,7 @@ CHAR DOSAPI AuxInput() {
 #if INLINE_ASM
 	ASM
 		"mov eax, 0x0300\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"movzx eax, al"
 		END_ASM
 #else
@@ -45,7 +45,7 @@ VOID DOSAPI AuxOutput(CHAR c) {
 	ASM
 		"movzx edx, cl\n\t"
 		"mov eax, 0x0400\n\t"
-		"int 0x41"
+		"int 0x21"
 		END_ASM
 #else
 	AuxOutputA(c);
@@ -57,7 +57,7 @@ VOID DOSAPI PrnOutput(CHAR c) {
 	ASM
 		"movzx edx, cl\n\t"
 		"mov eax, 0x0500\n\t"
-		"int 0x41"
+		"int 0x21"
 		END_ASM
 #else
 	PrnOutputA(c);
@@ -71,7 +71,7 @@ BOOL DOSAPI DirectConInAsync(LPCH c) {
 		"mov eax, 0x0600\n\t"
 		"mov edx, 0xFF\n\t"
 		"xor ecx, ecx\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"jnz short dciExit\n\t"
 		"inc ecx\n\t"
 		"mov byte ptr [r8], al\n"
@@ -90,7 +90,7 @@ VOID DOSAPI DirectConOutAsync(CHAR c) {
 		"je dcoExit\n\t"
 		"movzx edx, cl\n\t"
 		"mov eax, 0x0600\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"dcoExit:"
 		END_ASM
 #else
@@ -102,7 +102,7 @@ CHAR DOSAPI DirectConIn() {
 #if INLINE_ASM
 	ASM
 		"mov eax, 0x0700\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"movzx eax, al"
 		END_ASM
 #else
@@ -114,7 +114,7 @@ CHAR DOSAPI ConInput() {
 #if INLINE_ASM
 	ASM
 		"mov eax, 0x0800\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"movzx eax, al"
 		END_ASM
 #else
@@ -130,7 +130,7 @@ VOID DOSAPI __WriteString(LPCSTR lpString, int len) {
 		"inc ebx \n\t"
 		"xchg rdx, rcx \n\t"
 		"mov eax, 0x4000 \n\t"
-		"int 0x41 \n\t"
+		"int 0x21 \n\t"
 		"pop rbx"
 		END_ASM
 #else
@@ -153,7 +153,7 @@ VOID DOSAPI __GetBufferedInput(LPSTR lpString) {
 	ASM
 		"mov rdx, rcx\n\t"
 		"mov eax, 0x0A00\n\t"
-		"int 0x41"
+		"int 0x21"
 		END_ASM
 #else
 	__GetBufferedInputA(lpString);
@@ -176,7 +176,7 @@ BOOL DOSAPI GetConInputStatus() {
 #if INLINE_ASM
 	ASM
 		"mov eax, 0x0B00\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"and al, 1"
 		END_ASM
 #else
@@ -188,7 +188,7 @@ VOID DOSAPI ClearInputBuffer() {
 #if INLINE_ASM
 	ASM
 		"mov eax, 0x0C00\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		END_ASM
 #else
 	ClearInputBufferA();

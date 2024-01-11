@@ -11,7 +11,7 @@ VOID DOSAPI DiskReset(){
 #if INLINE_ASM
     ASM
         "mov eax, 0x0D00\n\t"
-        "int 0x41"
+        "int 0x21"
     END_ASM
 #else
     //DiskResetA();
@@ -23,7 +23,7 @@ VOID DOSAPI SetDefaultDrive(DRIVE_INDEX bDiskIndex){
     ASM
         "movzx edx, cl\n\t"
         "mov eax, 0x0E00\n\t"
-        "int 0x41"
+        "int 0x21"
     END_ASM
 #else
     //SetDefaultDriveA(bDiskIndex);
@@ -34,7 +34,7 @@ DRIVE_INDEX DOSAPI GetDefaultDrive(){
 #if INLINE_ASM
     ASM
         "mov eax, 0x1900\n\t"
-        "int 0x41"
+        "int 0x21"
     END_ASM
 #else
     //return GetDefaultDriveA();
@@ -63,7 +63,7 @@ BYTE DOSAPI GetDiskReadVerifyFlag(){
 #if INLINE_ASM
     ASM
         "mov eax, 0x5400\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
     END_ASM
 #else
     //GetDiskReadVerifyFlagA();
@@ -78,7 +78,7 @@ CHAR DOSAPI __ReadDiskRaw(LPVOID lpBuffer, DRIVE_INDEX diIndex, QWORD qwStartSec
         "movzx eax, dl\n\t"
         "mov ecx, r9d\n\t"
         "mov rdx, r8\n\t"
-        "int 0x45\n\t"
+        "int 0x25\n\t"
         "jc rawInError\n\t"
         "xor eax, eax\n"
         "rawInError:\n\t"
@@ -98,7 +98,7 @@ CHAR DOSAPI __WriteDiskRaw(LPVOID lpBuffer, DRIVE_INDEX diIndex, QWORD qwStartSe
         "movzx eax, dl\n\t"
         "mov ecx, r9d\n\t"
         "mov rdx, r8\n\t"
-        "int 0x46\n\t"
+        "int 0x26\n\t"
         "jc rawOutError\n\t"
         "xor eax, eax\n"
         "rawOutError:\n\t"

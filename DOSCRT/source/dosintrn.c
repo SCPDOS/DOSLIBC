@@ -9,7 +9,7 @@ BOOL DOSAPI GetDefaultDiskDPBPointer(LPDPB lpDPB){
     ASM
         "push rbx\n\t"
         "mov eax, 0x1F00\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "not al\n\t"
         "jz gdddpExit\n\t"
         "mov qword [rcx], rbx\n\t"
@@ -30,7 +30,7 @@ BOOL DOSAPI GetDPBPointer(DRIVE_NUMBER bNumber, LPDPB lpDPB){
         "mov dl, cl\n\t"
         "xor ecx, ecx\n\t"
         "mov eax, 0x3200\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "cmp al, -1\n\t"
         "cmove eax, ecx\n\t"
         "je getDPBExit\n\t"
@@ -51,7 +51,7 @@ VOID DOSAPI SetCurrentProcessId(PROCESS_ID pid){
         "push rbx\n\t"
         "mov rbx, rcx\n\t"
         "mov eax, 0x5000\n\t"
-        "int 0x41"
+        "int 0x21"
     END_ASM
 #else
     //SetCurrentProcessIdA(pid);
@@ -63,7 +63,7 @@ PROCESS_ID DOSAPI GetCurrentProcessId(){
     ASM
         "push rbx\n\t"
         "mov eax, 0x5100\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "mov rax, rbx\n\t"
         "pop rbx"
     END_ASM
@@ -77,7 +77,7 @@ LPVOID DOSAPI GetPointerToDosSysVars(){
     ASM
         "push rbx\n\t"
         "mov eax, 0x5200\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "mov rax, rbx\n\t"
         "pop rbx"
     END_ASM
@@ -94,7 +94,7 @@ VOID DOSAPI GenerateDPB(LPVOID lpBPB, LPDPB lpDPB){
         "mov rsi, rcx\n\t"
         "mov rbp, rdx\n\t"
         "mov eax, 0x5300\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "pop rbp\n\t"
         "pop rsi"
     END_ASM
@@ -108,7 +108,7 @@ VOID DOSAPI GeneratePartialPSP(LPVOID lpPSPAddress){
     ASM
         "mov rdx, rcx\n\t"
         "mov eax, 0x2600\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
     END_ASM
 #else
     //GeneratePartialPSPA(lpPSPAddress);
@@ -121,7 +121,7 @@ VOID DOSAPI GenerateNewPSP(LPVOID lpPSPAddress, DWORD dwSizeOfPSPAllocation){
         "mov rsi, rdx\n\t"
         "mov rdx, rcx\n\t"
         "mov eax, 0x5500\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "pop rsi"
     END_ASM
 #else
@@ -134,7 +134,7 @@ LPCH DOSAPI GetPtrToInDOSFlag(){
     ASM
         "push rbx\n\t"
         "mov eax, 0x3400\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "mov rax, rbx\n\t"
         "pop rbx\n\t"
     END_ASM
@@ -147,7 +147,7 @@ CHAR GetSwitchChar(){
 #if INLINE_ASM
     ASM
         "mov eax, 0x3700\n\t"
-        "int 0x41\n\t"
+        "int 0x21\n\t"
         "movzx eax, dl"
     END_ASM
 #else
@@ -160,7 +160,7 @@ VOID SetSwitchChar(CHAR switchChar){
     ASM
         "mov eax, 0x3701\n\t"
         "mov dl, cl\n\t"
-        "int 0x41"
+        "int 0x21"
     END_ASM
 #else
     //SetSwitchChar(switchChar);

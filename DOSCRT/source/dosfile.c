@@ -19,7 +19,7 @@ BOOL DOSAPI CreateDirectory(LPCSTR lpDirectoryName) {
 		"mov rdx, rcx\n\t"
 		"mov eax, 0x3900\n\t"
 		"xor ecx, ecx\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov eax, 1\n\t"
 		"cmovc eax, ecx"
 		END_ASM
@@ -34,7 +34,7 @@ BOOL DOSAPI DeleteDirectory(LPCSTR lpDirectoryName) {
 		"mov rdx, rcx\n\t"
 		"mov eax, 0x3A00\n\t"
 		"xor ecx, ecx\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov eax, 1\n\t"
 		"cmovc eax, ecx"
 		END_ASM
@@ -49,7 +49,7 @@ BOOL DOSAPI ChangeCurrentDirectory(LPCSTR lpDirectoryName) {
 		"mov rdx, rcx\n\t"
 		"mov eax, 0x3B00\n\t"
 		"xor ecx, ecx\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov eax, 1\n\t"
 		"cmovc eax, ecx"
 		END_ASM
@@ -63,7 +63,7 @@ HANDLE DOSAPI CreateFile(LPCSTR lpFileName, FILE_ATTRIBUTES dwFileAttributes) {
 	ASM
 		"xchg rdx, rcx\n\t"
 		"mov eax, 0x3C00\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov ecx, -1\n\t"
 		"cmovc eax, ecx"
 		END_ASM
@@ -85,7 +85,7 @@ HANDLE DOSAPI OpenFile(LPCSTR lpFileName, FILE_OPEN_MODE dwOpenMode, \
 		"and r8b, 0x70\n\t "
 		"or al, r8b\n\t"
 		"mov rdx, rcx\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov ecx, -1\n\t"
 		"cmovc eax, ecx"
 		END_ASM
@@ -101,7 +101,7 @@ BOOL DOSAPI CloseFile(HANDLE hFile) {
 		"mov eax, 0x3E00\n\t"
 		"push rbx\n\t"
 		"mov ebx, ecx\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"pop rbx\n\t"
 		"mov ecx, 1\n\t"
 		"mov eax, 0\n\t"
@@ -122,7 +122,7 @@ BOOL DOSAPI ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, 
 		"\t mov ebx, ecx\n"
 		"\t mov rcx, r8\n"
 		"\t mov eax, 0x3F00\n"
-		"\t int 0x41\n"
+		"\t int 0x21\n"
 		"\t pop rbx\n"
 		"\t jnc readOk\n"
 		"\t mov eax, 0\n"
@@ -147,7 +147,7 @@ BOOL DOSAPI WriteFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToWrite
 		"\t mov ebx, ecx\n"
 		"\t mov rcx, r8\n"
 		"\t mov eax, 0x4000\n"
-		"\t int 0x41\n"
+		"\t int 0x21\n"
 		"\t pop rbx\n"
 		"\t jnc writeOk\n"
 		"\t mov eax, 0\n"
@@ -167,7 +167,7 @@ BOOL DOSAPI DeleteFile(LPCSTR lpFileName) {
 	ASM
 		"mov rdx, rcx\n\t"
 		"mov eax, 0x4100\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov ecx, 1\n\t"
 		"mov eax, 0\n\t"
 		"cmovc eax, ecx"
@@ -186,7 +186,7 @@ DWORD DOSAPI SetFilePointer(HANDLE hFile, LONG lDistanceToMove, DWORD dwMoveMeth
 		"mov ebx, ecx\n\t"
 		"mov eax, 0x4200\n\t"
 		"mov al, r8b\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"pop rbx\n\t"
 		END_ASM
 #else
@@ -209,7 +209,7 @@ DWORD DOSAPI SetFilePointerL(HANDLE hFile, LONG lDistanceToMove, PLONG lpDistanc
 		"cmovnz ecx, dword ptr [r8]\n\t"
 		"mov eax, 0x4200\n\t"
 		"mov al, r9b\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"pop rbx\n\t"
 		END_ASM
 #else
@@ -224,7 +224,7 @@ DWORD DOSAPI GetFileAttributes(LPCSTR lpFileName) {
 	ASM
 		"mov rdx, rcx\n\t"
 		"mov eax, 0x4300\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov ecx, -1\n\t"
 		"cmovc eax, ecx"
 		END_ASM
@@ -238,7 +238,7 @@ DWORD DOSAPI SetFileAttributes(LPCSTR lpFileName, DWORD dwFileAttributes) {
 	ASM
 		"xchg rdx, rcx\n\t"
 		"mov eax, 0x4301\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov ecx, -1\n\t"
 		"cmovc eax, ecx"
 		END_ASM
@@ -257,7 +257,7 @@ BOOL DOSAPI DuplicateHandle(HANDLE hSourceHandle, LPHANDLE lpDestinationHandle) 
 		"mov ebx, ecx\n\t"
 		"mov eax, 0x4500\n\t"
 		"xor ecx, ecx\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"cmovc eax, ecx\n\t"
 		"jc dupExit\n\t"
 		"mov dword ptr [rdx], eax\n\t"
@@ -280,7 +280,7 @@ BOOL DOSAPI ForceDuplicateHandle(HANDLE hSourceHandle, \
 		"mov ebx, ecx\n\t"
 		"mov ecx, edx\n\t"
 		"mov eax, 0x4600\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov eax, 1\n\t"
 		"mov ecx, 0\n\t"
 		"cmovc eax, ecx\n\t"
@@ -301,7 +301,7 @@ BOOL DOSAPI GetCurrentDirectory(DRIVE_LETTER dlDriveLetter, LPSTR lpDirectoryBuf
 		"sub edx, 0x41\n\t"
 		"mov eax, 0x4700\n\t"
 		"xor ecx, ecx\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov eax, 1\n\t"
 		"cmovc eax, ecx\n\t"
 		"pop rsi"
@@ -317,7 +317,7 @@ BOOL DOSAPI __FindFirst(LPCSTR lpFileName, FILE_ATTRIBUTES dwFileAttributes) {
 		"xchg rcx, rdx\n\t"
 		"and ecx, 0xFFFF\n\t"
 		"mov eax, 0x4E00\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov ecx, 0\n\t"
 		"mov eax, 1\n\t"
 		"cmovc eax, ecx"
@@ -344,7 +344,7 @@ BOOL DOSAPI __FindNext() {
 	ASM
 		"mov eax, 0x4F00\n\t"
 		"xor ecx, ecx\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov eax, 1\n\t"
 		"cmovc eax, ecx"
 		END_ASM
@@ -375,7 +375,7 @@ BOOL DOSAPI RenameFile(LPCSTR lpOldFileName, LPCSTR lpNewFileName) {
 		"mov rdx, rcx\n\t"
 		"mov eax, 0x5600\n\t"
 		"xor ecx, ecx\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov eax, 1\n\t"
 		"cmovc eax, ecx\n\t"
 		"pop rdi\n\t"
@@ -392,7 +392,7 @@ BOOL DOSAPI GetFileDateAndTime(HANDLE hFile, LPFAT_TIME lpFileTime, LPFAT_DATE l
 		"mov r9, rdx\n\t"
 		"mov ebx, ecx\n\t"
 		"mov eax, 0x5700\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"pop rbx\n\t"
 		"mov eax, 0\n\t"
 		"jc getDateTimeExit\n\t"
@@ -415,7 +415,7 @@ BOOL DOSAPI SetFileDateAndTime(HANDLE hFile, FAT_TIME ftFileTime, FAT_DATE ftFil
 		"movzx edx, r8w\n\t"
 		"mov eax, 0x5701\n\t"
 		"xor r8, r8\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov eax, 1 \n\t"
 		"cmovc eax, r8d"
 		END_ASM
@@ -431,7 +431,7 @@ HANDLE DOSAPI CreateTemporaryFile(LPSTR lpFileNameBuffer, FILE_ATTRIBUTES dwFile
 	ASM
 		"xchg rdx, rcx\n\t"
 		"mov eax, 0x5A00\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov ecx, -1\n\t"
 		"cmovc eax, ecx"
 		END_ASM
@@ -445,7 +445,7 @@ HANDLE DOSAPI CreateUniqueFile(LPCSTR lpFileName, FILE_ATTRIBUTES dwFileAttribut
 	ASM
 		"xchg rdx, rcx\n\t"
 		"mov eax, 0x3C00\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov ecx, -1\n\t"
 		"cmovc eax, ecx"
 		END_ASM
@@ -464,7 +464,7 @@ BOOL DOSAPI GetFQFileName(LPCSTR lpSourceFileName, LPSTR lpFQFileName) {
 		"mov rdi, rdx\n\t"
 		"xor ecx, ecx\n\t"
 		"mov eax, 0x6000\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov eax, 1\n\t"
 		"cmovc eax, ecx\n\t"
 		"pop rdi\n\t"
@@ -482,7 +482,7 @@ BOOL DOSAPI FlushFile(HANDLE hFile) {
 		"mov ebx, ecx\n\t"
 		"mov eax, 0x6800\n\t"
 		"xor ecx, ecx\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov eax, 1\n\t"
 		"cmovc eax, ecx"
 		END_ASM

@@ -44,10 +44,10 @@ __start__:
     ;We're gonna be proper and ask DOS to give us the ptr to ENV and CMDLINE
     ;The cmdline is guaranteed to be at ptr + 37 (+36 gives number of chars)
     mov eax, 0x6100 ;New System Service, get environment ptr
-    int 0x41
+    int 0x21
     mov qword [_env], rdx
     mov eax, 0x6101 ;New System Service, get cmdline ptr pls in rdx
-    int 0x41
+    int 0x21
     mov eax, 0x7F   ;Max number of chars in buffer (127)
     movzx ecx, byte ptr [rdx + 36]  ;Get the number of chars in here
     cmp ecx, eax    ;Is the number of chars bigger than 127?
@@ -75,14 +75,14 @@ endOfCmdLine:
     mov eax, 0x4800
     lea rbx, qword [8*rdx + 0x11] ;Get the number of bytes to allocate
     shr rbx, 4  ;Divide by 16 to get number of paragraphs
-    int 41h
+    int 21h
     jc exitBad
     mov rbp, rax    ;Store the ptr to the array here
 ;argv array must have a qword at _argv[_argc] = 0
     mov qword [_argv], rbp  ;Save the ptr to the char* array
 ;Place pointer to filename in argv array
     mov eax, 6102h  ;Get FQN pointer in rdx
-    int 41h
+    int 21h
     mov qword [rbp], rdx    ;Store the name pointer here
     cmp rdx, qword [_argc]  ;Are we equal yet?
     je short endArgv
@@ -116,18 +116,18 @@ endArgv:
 ;Step 4)
     mov r8, qword [_argv]   ;Get the pointer to free this block
     mov eax, 0x4900 ;Explicitly try to free
-    int 0x41
+    int 0x21
 exitCommon:
     mov ecx, 0xFF
     cmp eax, ecx
     cmova eax, ecx 
     or eax, 0x4C00  ;Add the exit code into AH w/o stall
-    int 0x41 ;Return to DOS
+    int 0x21 ;Return to DOS
 ;If there is an allocation error, exit
 exitBad:
     lea rdx, badMemStr
     mov eax, 0x0900
-    int 0x41
+    int 0x21
     mov eax, 0xFF
     jmp short exitCommon
 badMemStr db "CRT: Not enough memory",0Ah,0Dh,"$"

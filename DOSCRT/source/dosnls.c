@@ -9,7 +9,7 @@ VOID DOSAPI GetCountryInformation(LPCOUNTRY_BLOCK lpCountryBlock){
     ASM
         "mov eax, 0x3800\n\t"
         "mov rdx, rcx\n\t"
-        "int 0x41"
+        "int 0x21"
     END_ASM
 #else
     //GetCountryInformation(lpCountryBlock);

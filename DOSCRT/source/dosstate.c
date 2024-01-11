@@ -21,7 +21,7 @@ VOID DOSAPI SetInterruptVector(DWORD dwInterruptVector, LPVOID lpInterruptHandle
 	ASM
 		"movzx eax, cl\n\t"
 		"mov ah, 0x25\n\t"
-		"int 0x41"
+		"int 0x21"
 		END_ASM
 #else
 	//SetInterruptVectorA(dwInterruptVector, lpInterruptHandler);
@@ -34,7 +34,7 @@ LPVOID DOSAPI GetInterruptVector(DWORD dwInterruptVector) {
 		"push rbx\n\t"
 		"movzx eax, cl\n\t"
 		"mov ah, 0x35\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"mov rax, rbx\n\t"
 		"pop rbx"
 		END_ASM
@@ -47,7 +47,7 @@ VOID DOSAPI SetDiskVerifyState() {
 #if INLINE_ASM
 	ASM
 		"mov eax, 0x2E01\n\t"
-		"int 0x41"
+		"int 0x21"
 		END_ASM
 #else
 	//SetDiskVerifyStateA();
@@ -58,7 +58,7 @@ VOID DOSAPI ClearDiskVerifyState() {
 #if INLINE_ASM
 	ASM
 		"mov eax, 0x2E00\n\t"
-		"int 0x41"
+		"int 0x21"
 		END_ASM
 #else
 	//ClearDiskVerifyStateA();
@@ -69,7 +69,7 @@ WORD DOSAPI GetDOSVersion() {
 #if INLINE_ASM
 	ASM
 		"mov eax, 0x3000\n\t"
-		"int 0x41"
+		"int 0x21"
 		END_ASM
 #else
 	//return GetDOSVersionA();
@@ -80,7 +80,7 @@ BOOL DOSAPI GetCtrlBreakState() {
 #if INLINE_ASM
 	ASM
 		"mov eax, 0x3300\n\t"
-		"int 0x41\n\t"
+		"int 0x21\n\t"
 		"movzx eax, dl"
 		END_ASM
 #else
@@ -93,7 +93,7 @@ VOID DOSAPI SetCtrlBreakState(BOOL bState) {
 	ASM
 		"mov eax, 0x3301\n\t"
 		"mov dl, cl\n\t"
-		"int 0x41"
+		"int 0x21"
 		END_ASM
 #else
 	//SetCtrlBreakState(bState);
