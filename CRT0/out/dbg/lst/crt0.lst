@@ -46,10 +46,10 @@
     44                                      ;We're gonna be proper and ask DOS to give us the ptr to ENV and CMDLINE
     45                                      ;The cmdline is guaranteed to be at ptr + 37 (+36 gives number of chars)
     46 0000002A B800610000                  mov eax, 0x6100 ;New System Service, get environment ptr
-    47 0000002F CD41                        int 0x41
+    47 0000002F CD21                        int 0x21
     48 00000031 488915(00000000)            mov qword [_env], rdx
     49 00000038 B801610000                  mov eax, 0x6101 ;New System Service, get cmdline ptr pls in rdx
-    50 0000003D CD41                        int 0x41
+    50 0000003D CD21                        int 0x21
     51 0000003F B87F000000                  mov eax, 0x7F   ;Max number of chars in buffer (127)
     52 00000044 0FB64A24                    movzx ecx, byte ptr [rdx + 36]  ;Get the number of chars in here
     53 00000048 39C1                        cmp ecx, eax    ;Is the number of chars bigger than 127?
@@ -77,14 +77,14 @@
     75 0000007F B800480000                  mov eax, 0x4800
     76 00000084 488D1CD511000000            lea rbx, qword [8*rdx + 0x11] ;Get the number of bytes to allocate
     77 0000008C 48C1EB04                    shr rbx, 4  ;Divide by 16 to get number of paragraphs
-    78 00000090 CD41                        int 41h
+    78 00000090 CD21                        int 21h
     79 00000092 0F8289000000                jc exitBad
     80 00000098 4889C5                      mov rbp, rax    ;Store the ptr to the array here
     81                                  ;argv array must have a qword at _argv[_argc] = 0
     82 0000009B 48892D(00000000)            mov qword [_argv], rbp  ;Save the ptr to the char* array
     83                                  ;Place pointer to filename in argv array
     84 000000A2 B802610000                  mov eax, 6102h  ;Get FQN pointer in rdx
-    85 000000A7 CD41                        int 41h
+    85 000000A7 CD21                        int 21h
     86 000000A9 48895500                    mov qword [rbp], rdx    ;Store the name pointer here
     87 000000AD 483B15(00000000)            cmp rdx, qword [_argc]  ;Are we equal yet?
     88 000000B4 742B                        je short endArgv
@@ -118,18 +118,18 @@
    116                                  ;Step 4)
    117 00000102 4C8B05(00000000)            mov r8, qword [_argv]   ;Get the pointer to free this block
    118 00000109 B800490000                  mov eax, 0x4900 ;Explicitly try to free
-   119 0000010E CD41                        int 0x41
+   119 0000010E CD21                        int 0x21
    120                                  exitCommon:
    121 00000110 B9FF000000                  mov ecx, 0xFF
    122 00000115 39C8                        cmp eax, ecx
    123 00000117 0F47C1                      cmova eax, ecx 
    124 0000011A 0D004C0000                  or eax, 0x4C00  ;Add the exit code into AH w/o stall
-   125 0000011F CD41                        int 0x41 ;Return to DOS
+   125 0000011F CD21                        int 0x21 ;Return to DOS
    126                                  ;If there is an allocation error, exit
    127                                  exitBad:
    128 00000121 488D150E000000              lea rdx, badMemStr
    129 00000128 B800090000                  mov eax, 0x0900
-   130 0000012D CD41                        int 0x41
+   130 0000012D CD21                        int 0x21
    131 0000012F B8FF000000                  mov eax, 0xFF
    132 00000134 EBDA                        jmp short exitCommon
    133 00000136 4352543A204E6F7420-     badMemStr db "CRT: Not enough memory",0Ah,0Dh,"$"

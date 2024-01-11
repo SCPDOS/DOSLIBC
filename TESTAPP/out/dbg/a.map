@@ -34,7 +34,7 @@ LOAD ./../CRT0/out/lib/crt0.lib
                 0x000000014000114f                __main
  .text          0x0000000140001150       0x40 ./out/bin/main.obj
                 0x0000000140001150                main
- .text          0x0000000140001190      0xb90 ./../DOSCRT/./out/lib/scpdos.lib
+ .text          0x0000000140001190      0xbb0 ./../DOSCRT/./out/lib/scpdos.lib
                 0x0000000140001190                SetInterruptVector
                 0x00000001400011a5                GetInterruptVector
                 0x00000001400011bb                SetDiskVerifyState
@@ -77,54 +77,54 @@ LOAD ./../CRT0/out/lib/crt0.lib
                 0x0000000140001675                GetCurrentDirectory
                 0x00000001400016a0                __FindFirst
                 0x00000001400016cb                FindFirstFile
-                0x0000000140001719                __FindNext
-                0x0000000140001731                FindNextFile
-                0x000000014000176c                FindClose
-                0x000000014000177b                RenameFile
-                0x00000001400017a3                GetFileDateAndTime
-                0x00000001400017d5                SetFileDateAndTime
-                0x00000001400017fd                CreateTemporaryFile
-                0x000000014000181d                CreateUniqueFile
-                0x000000014000183d                GetFQFileName
-                0x0000000140001867                FlushFile
-                0x0000000140001886                ExecProcess
-                0x00000001400018ae                LoadProcess
-                0x00000001400018d6                LoadOverlay
-                0x00000001400018fe                ExitProcess
-                0x0000000140001913                ExitProcessAndStayResidentP
-                0x000000014000192b                ExitProcessAndStayResidentB
-                0x0000000140001939                GetExitCodeProcess
-                0x0000000140001947                __AllocateMemory
-                0x0000000140001962                __FreeMemory
-                0x0000000140001981                __ReallocateMemory
-                0x00000001400019a7                VirtualAllocate
-                0x00000001400019c2                VirtualFree
-                0x00000001400019dd                VirtualReallocate
-                0x0000000140001a03                PhysicalAllocate
-                0x0000000140001a1e                PhysicalFree
-                0x0000000140001a39                PhysicalReallocate
-                0x0000000140001a5f                GetMemoryAllocationStrategy
-                0x0000000140001a6d                SetMemoryAllocationStrategy
-                0x0000000140001a8d                GetChar
-                0x0000000140001a9e                PutChar
-                0x0000000140001ab4                AuxInput
-                0x0000000140001ac5                AuxOutput
-                0x0000000140001adb                PrnOutput
-                0x0000000140001af1                DirectConInAsync
-                0x0000000140001b16                DirectConOutAsync
-                0x0000000140001b31                DirectConIn
-                0x0000000140001b42                ConInput
-                0x0000000140001b53                __WriteString
-                0x0000000140001b71                WriteString
-                0x0000000140001bd0                __GetBufferedInput
-                0x0000000140001be5                GetBufferedInput
-                0x0000000140001c23                GetConInputStatus
-                0x0000000140001c33                ClearInputBuffer
-                0x0000000140001c41                GetDate
-                0x0000000140001c76                SetDate
-                0x0000000140001c9e                GetTime
-                0x0000000140001cd2                SetTime
-                0x0000000140001d0a                GetCountryInformation
+                0x000000014000171a                __FindNext
+                0x0000000140001732                FindNextFile
+                0x0000000140001770                FindClose
+                0x000000014000177f                RenameFile
+                0x00000001400017a7                GetFileDateAndTime
+                0x00000001400017d9                SetFileDateAndTime
+                0x0000000140001801                CreateTemporaryFile
+                0x0000000140001821                CreateUniqueFile
+                0x0000000140001841                GetFQFileName
+                0x000000014000186b                FlushFile
+                0x000000014000188a                ExecProcess
+                0x00000001400018b2                LoadProcess
+                0x00000001400018da                LoadOverlay
+                0x0000000140001902                ExitProcess
+                0x0000000140001917                ExitProcessAndStayResidentP
+                0x000000014000192f                ExitProcessAndStayResidentB
+                0x000000014000193d                GetExitCodeProcess
+                0x000000014000194b                __AllocateMemory
+                0x0000000140001966                __FreeMemory
+                0x0000000140001985                __ReallocateMemory
+                0x00000001400019ab                VirtualAllocate
+                0x00000001400019c9                VirtualFree
+                0x00000001400019e7                VirtualReallocate
+                0x0000000140001a0d                PhysicalAllocate
+                0x0000000140001a2b                PhysicalFree
+                0x0000000140001a49                PhysicalReallocate
+                0x0000000140001a6f                GetMemoryAllocationStrategy
+                0x0000000140001a7d                SetMemoryAllocationStrategy
+                0x0000000140001a9d                GetChar
+                0x0000000140001aae                PutChar
+                0x0000000140001ac4                AuxInput
+                0x0000000140001ad5                AuxOutput
+                0x0000000140001aeb                PrnOutput
+                0x0000000140001b01                DirectConInAsync
+                0x0000000140001b26                DirectConOutAsync
+                0x0000000140001b41                DirectConIn
+                0x0000000140001b52                ConInput
+                0x0000000140001b63                __WriteString
+                0x0000000140001b81                WriteString
+                0x0000000140001be1                __GetBufferedInput
+                0x0000000140001bf6                GetBufferedInput
+                0x0000000140001c37                GetConInputStatus
+                0x0000000140001c47                ClearInputBuffer
+                0x0000000140001c55                GetDate
+                0x0000000140001c8a                SetDate
+                0x0000000140001cb0                GetTime
+                0x0000000140001ce4                SetTime
+                0x0000000140001d1c                GetCountryInformation
 
 .rdata          0x0000000140002000      0x200 load address 0x0000000000002000
  .rdata         0x0000000140002000       0x10 ./out/bin/main.obj
