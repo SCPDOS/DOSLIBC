@@ -48,28 +48,22 @@ __start__:
     mov qword [_env], rdx
     mov eax, 0x6101 ;New System Service, get cmdline ptr pls in rdx
     int 0x21
-    mov eax, 0x7F   ;Max number of chars in buffer (127)
-    movzx ecx, byte ptr [rdx + 36]  ;Get the number of chars in here
-    cmp ecx, eax    ;Is the number of chars bigger than 127?
-    cmova ecx, eax  ;If so, replace it with 127
-    lea rdi, qword ptr [rdx + 37]   ;Get the ptr to the char array
-    mov rsi, rdi    ;Save the ptr to the string array in rsi
-    xor edx, edx    ;Clear the argc counter
-    mov al, " "     ;Search for space
+    lea rsi, qword ptr [rdx + 37]   ;Get the ptr to the char array
+    mov rdi, rsi    ;Save the ptr to the string array in rdi
+    mov edx, 1      ;Set the argc counter to 1 (we always have a filename)
 makeCstrings:
-    repne scasb     ;Search for first space past name
-    jecxz endOfCmdLine ;No more chars, exit and terminate current string
-    mov byte [rdi - 1], 0   ;Null terminate this string
-    inc edx ;One more string processed
-    repe scasb  ;Skip all the spaces
-    test ecx, ecx
-    jnz short makeCstrings
-    cmp byte [rdi - 1], " "
-    jne short endOfCmdLine    ;If the last char was not a space, skip the dec
-    dec edx ;Dec the count to balance the below (as we searched thru spaces)
+    call skipDelimiters ;Skip leading delimiters
+mcslp:
+    lodsb   ;Get the char here
+    cmp al, 0Dh         ;Did we get the terminating CR?
+    je endOfCmdLine
+    call isALdelimiter      ;Else, is this a delimiter?
+    jne mcslp               ;If not, keep looking
+    mov byte [rsi - 1], 0   ;Null terminate this string
+    inc edx                 ;One more string processed
+    jmp short makeCstrings  ;Now skip leading delimiters
 endOfCmdLine:
-    inc edx ;Add one more char which we are about to terminate
-    mov byte [rdi], 0   ;Store a final null over terminating 0Dh
+    mov byte [rsi - 1], 0   ;Store a final null over terminating 0Dh
     inc edx ;Add one more entry to argv for the command line itself
     mov qword [_argc], rdx  ;Save the number of arguments we have
     mov eax, 0x4800
@@ -81,28 +75,33 @@ endOfCmdLine:
 ;argv array must have a qword at _argv[_argc] = 0
     mov qword [_argv], rbp  ;Save the ptr to the char* array
 ;Place pointer to filename in argv array
-    mov eax, 6102h  ;Get FQN pointer in rdx
-    int 21h
+    mov eax, 6102h  ;Get pointer in rdx
+    int 21h         ;Can fail with CF=CY or RDX=<NUL>
+    jnc .nameOk
+    test rdx, rdx   
+    jnz .nameOk
+    lea rdx, noNameStr  ;Get the default 8.3,<NUL> string
+.nameOk:
     mov qword [rbp], rdx    ;Store the name pointer here
-    cmp rdx, qword [_argc]  ;Are we equal yet?
+    cmp qword [_argc], 1    ;Do we just have a file name?
     je short endArgv
 ;Get pointers to the ASCIIZ command line arguments for argv
-    mov rdi, rsi    ;Get the start of the command line string into rdi
+    mov rsi, rdi    ;Get the start of the command line string into rsi
     mov rdx, 1      ;Go to the first entry
+    ;This cannot start by ending up on a null so we ok!
     xor ecx, ecx
-    dec ecx         ;Get -1 in ecx
-    xor eax, eax    ;Scan for nulls
-    mov ah, " "     ;Prepare for space scanning
+    dec ecx     ;Ensure we can repne scasb 
 buildArgv:
-    mov qword [rbp + 8*rdx], rdi  ;Save rdi as the ptr to the string
-    repne scasb   ;Scan for the terminating null
-    xchg al, ah 
-    repe scasb    ;Scan through the spaces to char 1 of the string
-    dec rdi     ;Go back to the first char since scasb goes to next char
-    xchg al, ah
+    call skipDelimiters             
+    mov qword [rbp + 8*rdx], rsi    ;Save rsi as the ptr to the string
     inc edx
-    cmp rdx, qword [_argc]  ;Are we equal yet?
-    jne short buildArgv
+    cmp rdx, qword [_argc]          ;Are we equal yet?
+    je endArgv
+    xor eax, eax
+    mov rdi, rsi
+    repne scasb     ;Scan off the null
+    mov rsi, rdi    ;rdi points past the null
+    jmp short buildArgv ;Now skip the delimiters again!
 endArgv:
     xor eax, eax
     mov qword [rbp + 8*rdx], rax    ;Store a ptr to NULL
@@ -131,7 +130,40 @@ exitBad:
     mov eax, 0xFF
     jmp short exitCommon
 badMemStr db "CRT: Not enough memory",0Ah,0Dh,"$"
+noNameStr db "DOS_PROG.UNK",0   ;Default string, can be anything tbh
 ;GCC provides a call to this main constructor. Since we 
 ; setup everything in assembly in CRT0, we don't need this.
 __main:
+    ret
+
+;This is to parse command tails as passed by COMMAND.COM
+skipDelimiters:
+;Skips all "standard" command delimiters. This is not the same as FCB 
+; command delimiters but a subset thereof. 
+;These are the same across all codepages.
+;Input: rsi must point to the start of the data string
+;Output: rsi points to the first non-delimiter char
+    push rax
+.l1:
+    lodsb
+    call isALdelimiter
+    jz .l1
+.exit:
+    pop rax
+    dec rsi ;Point rsi back to the char which is not a command delimiter
+    ret
+
+isALdelimiter:
+;Returns: ZF=NZ if al is not a command separator 
+;         ZF=ZE if al is a command separator
+    cmp al, " "
+    je .exit
+    cmp al, ";"
+    je .exit
+    cmp al, "="
+    je .exit
+    cmp al, ","
+    je .exit
+    cmp al, 09h ;TAB
+.exit:
     ret
