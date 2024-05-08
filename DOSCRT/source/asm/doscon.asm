@@ -10,7 +10,7 @@ GetCharA ENDP
 
 PutCharA PROC PUBLIC
     movzx edx, cl
-    mov eax, 0200
+    mov eax, 0200h
     int 21h
     ret
 PutCharA ENDP
