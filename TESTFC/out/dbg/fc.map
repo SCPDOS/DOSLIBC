@@ -41,16 +41,16 @@ LOAD ./../CRT0/out/lib/crt0.lib
  *fill*         0x00000001400011ba        0x6 
  .text          0x00000001400011c0      0x5a0 ./out/bin/main.obj
                 0x00000001400011c0                main
-                0x00000001400014b0                printErrorMsg
-                0x0000000140001543                openFile
-                0x0000000140001563                closeFile
-                0x000000014000157c                readFile
-                0x00000001400015aa                writeFile
-                0x00000001400015d8                writeCon
-                0x000000014000160b                scanChar
-                0x000000014000164d                strlen
-                0x000000014000167f                writeByteAtCursor
-                0x00000001400016f6                writeDwordAtCursor
+                0x00000001400014ad                printErrorMsg
+                0x0000000140001540                openFile
+                0x0000000140001560                closeFile
+                0x0000000140001579                readFile
+                0x00000001400015a7                writeFile
+                0x00000001400015d5                writeCon
+                0x0000000140001608                scanChar
+                0x000000014000164a                strlen
+                0x000000014000167c                writeByteAtCursor
+                0x00000001400016f3                writeDwordAtCursor
  .text          0x0000000140001760      0x330 ./../IO/./out/lib/io.lib(io.o)
                 0x0000000140001760                _close
                 0x000000014000177e                _commit

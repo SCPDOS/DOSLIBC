@@ -25,9 +25,6 @@ char* paramString = "\r\n usage: fc [drive:]pathname1 [drive:]pathname2 \r\n";
 
 int main(int argc, char** argv)
 {
-    __asm__ __volatile__(
-    "xchg bx, bx"
-    );
 	argc -= 1; /*Get rid of initial argument (filename) from count*/
 	int retVal = 0;
 	/*Create two pointers for the filenames*/
