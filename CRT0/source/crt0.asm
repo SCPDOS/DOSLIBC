@@ -1,6 +1,10 @@
 %use masm
 BITS 64
-;Need to modify slightly to 
+
+;WARNING WARNING WARNING WARNING WARNING WARNING 
+; cmdline MUST be CR terminated!!!
+;WARNING WARNING WARNING WARNING WARNING WARNING 
+
 extern main
 extern _BSS_START_
 extern _BSS_END_
@@ -10,160 +14,162 @@ extern _env     ;Environment
 
 global __start__
 global __main
+
+; Equates used locally in this CRT0
+TAB equ 0x09
+LF equ 0x0A
+CR equ 0x0D
+SPC equ 0x20
+
     section .text
-;TODO:
-;0) Paragraph align the stack
-;1) Clean the BSS
-;2) Process command line to get argc, argv
-;3) Call main.
-;4) If eax > 0FFh, set al = 0FFh and 41h/AH=4Ch exit
-;Future expansion:
-;Hook Int 00h to prevent termination in the event of such a bug.
-; We first print an error message, then pop the RIP value from 
-; the stack, decode the instruction and go to the next 
-; instruction after it!
 __start__:
 ;BREAKPOINT BREAKPOINT BREAKPOINT BREAKPOINT
     ;xchg bx, bx
 ;BREAKPOINT BREAKPOINT BREAKPOINT BREAKPOINT
     cld ;Ensure the direction is good (DOS does this anyway)
-;Step 0)
 ;Realign the stack 
     mov rax, rsp
     shr rax, 4  ;Divide by 16
     shl rax, 4  
     mov rsp, rax
 ;Leave rsp alone now
-;Step 1)
     mov rdi, _BSS_START_
     mov rcx, _BSS_END_
     sub rcx, rdi
     xor eax, eax
     rep stosb
-;Step 2)
-    ;We're gonna be proper and ask DOS to give us the ptr to ENV and CMDLINE
-    ;The cmdline is guaranteed to be at ptr + 37 (+36 gives number of chars)
+;We're gonna be proper and ask DOS to give us the ptr to ENV and CMDLINE
+;The cmdline is guaranteed to be at ptr + 37 (+36 gives number of chars)
+; We ignore the char count (not a great idea but we do this for most apps)
     mov eax, 0x6100 ;New System Service, get environment ptr
     int 0x21
     mov qword [_env], rdx
     mov eax, 0x6101 ;New System Service, get cmdline ptr pls in rdx
     int 0x21
     lea rsi, qword ptr [rdx + 37]   ;Get the ptr to the char array
-    mov rdi, rsi    ;Save the ptr to the string array in rdi
-    mov edx, 1      ;Set the argc counter to 1 (we always have a filename)
-makeCstrings:
-    call skipDelimiters ;Skip leading delimiters
-mcslp:
-    lodsb   ;Get the char here
-    cmp al, 0Dh         ;Did we get the terminating CR?
-    je endOfCmdLine
-    call isALdelimiter      ;Else, is this a delimiter?
-    jne mcslp               ;If not, keep looking
-    mov byte [rsi - 1], 0   ;Null terminate this string
-    inc edx                 ;One more string processed
-    jmp short makeCstrings  ;Now skip leading delimiters
-endOfCmdLine:
-    mov byte [rsi - 1], 0   ;Store a final null over terminating 0Dh
-    inc edx ;Add one more entry to argv for the command line itself
-    mov qword [_argc], rdx  ;Save the number of arguments we have
-    mov eax, 0x4800
-    lea rbx, qword [8*rdx + 0x11] ;Get the number of bytes to allocate
-    shr rbx, 4  ;Divide by 16 to get number of paragraphs
+;Here we gotta ensure the first byte is a value less than 128 and then
+; check if @ byte [rsi + val] = CR. If not, fail
+    movzx eax, byte [rsi - 1]   ;Get cmdline "len"
+    cmp eax, 0x80    
+    jnb exitBadCmdLine
+    cmp byte [rsi + rax], CR    ;If not a CR here, then bad cmdline
+    jne exitBadCmdLine
+    mov eax, 0x4800 ;Allocate a block
+    mov ebx, 0x8    ;8 paragraphs (128 bytes) in length
     int 21h
-    jc exitBad
-    mov rbp, rax    ;Store the ptr to the array here
-;argv array must have a qword at _argv[_argc] = 0
-    mov qword [_argv], rbp  ;Save the ptr to the char* array
-;Place pointer to filename in argv array
-    mov eax, 6102h  ;Get pointer in rdx
-    int 21h         ;Can fail with CF=CY or RDX=<NUL>
-    jnc .nameOk
-    test rdx, rdx   
-    jnz .nameOk
-    lea rdx, noNameStr  ;Get the default 8.3,<NUL> string
-.nameOk:
-    mov qword [rbp], rdx    ;Store the name pointer here
-    cmp qword [_argc], 1    ;Do we just have a file name?
-    je short endArgv
-;Get pointers to the ASCIIZ command line arguments for argv
-    mov rsi, rdi    ;Get the start of the command line string into rsi
-    mov rdx, 1      ;Go to the first entry
-    ;This cannot start by ending up on a null so we ok!
-    xor ecx, ecx
-    dec ecx     ;Ensure we can repne scasb 
-buildArgv:
-    call skipDelimiters             
-    mov qword [rbp + 8*rdx], rsi    ;Save rsi as the ptr to the string
-    inc edx
-    cmp rdx, qword [_argc]          ;Are we equal yet?
-    je endArgv
-    xor eax, eax
-    mov rdi, rsi
-    repne scasb     ;Scan off the null
-    mov rsi, rdi    ;rdi points past the null
-    jmp short buildArgv ;Now skip the delimiters again!
-endArgv:
-    xor eax, eax
-    mov qword [rbp + 8*rdx], rax    ;Store a ptr to NULL
-    mov rcx, qword [_argc]  ;Get the regs in for the calling convention
-    mov rdx, qword [_argv]  ;Get the regs in for the calling convention
-    mov r8, qword [_env]    ;Get the optional, UNPARSED environment
-    ;We pass a ptr to the environment but it is unparsed as ANSI doesn't 
-    ; request this!
-;Step 3) 
+    jc exitBadAlloc
+    mov rdi, rax    ;Start storing cmdline args in here
+    mov rbp, rax    ;Save the string array ptr in rbp
+    mov ecx, 1      ;Number of strings cnt (1 for filename)
+makeCstrings:
+    call skipDelims ;Skip delimiters
+    cmp al, CR
+    je endStrBuild  ;Terminate the string build
+.lp:
+    lodsb
+    stosb
+    call isALDelimOrCR
+    jne .lp 
+    inc ecx     ;We just finished a string
+    mov byte [rdi - 1], 0   ;Store a null over the last char we just copied
+    cmp al, CR  ;If we just ended on a terminator finish, else...
+    jne makeCstrings    ;...go to next argument or terminator
+endStrBuild:
+    mov qword [_argc], rcx  ;Store the arg count in rcx
+    mov ebx, ecx 
+    inc ebx     ;Make space for terminating nullptr too
+    shl ebx, 3  ;Multiply by 8 bytes to get number of bytes to allocate
+    add ebx, 0x0F   ;Round up
+    shr ebx, 4  ;Turn into number of paragraphs to allocate (could optimise?)
+    mov eax, 0x4800
+    int 21h
+    jc exitBadAlloc
+    mov qword [_argv], rax
+    mov rsi, rax    ;Have rsi point to the array where we will store ptrs
+    mov eax, 6102h  ;Get the filename ptr in rdx
+    int 21h
+    jnc filenameOk
+    test rdx, rdx
+    jnc filenameOk
+    lea rdx, noNameStr
+filenameOk:
+    mov qword [rsi], rdx    ;Store the ptr here
+    add rsi, 8      ;Go to next entry in the array
+    mov edx, ecx    ;Get the number of args passed into edx 
+    dec edx         ;Decrement the number of entries left to process 
+    jz argvDone
+    mov rdi, rbp    ;Get back the ptr to the cmd array
+    xor eax, eax    ;Make nullptr but also for compare to al
+    mov ecx, -1     ;Use for repne scasb
+argvProcess:
+    mov qword [rsi], rdi
+    add rsi, 8      ;Goto next entry in the array
+    dec edx
+    jz argvDone
+    repne scasb     ;Find the next null, rdi points to next string
+    jmp short argvProcess
+argvDone:
+    mov qword [rsi], rax    ;Store the final null ptr we made space for
+prepEnter:
+    mov rcx, qword [_argc]  ;Get count for the calling convention
+    mov rdx, qword [_argv]  ;Get vec ptr for the calling convention
+    mov r8, qword [_env]    ;Get the optional, UNPARSED environment ptr
+;Call the main function :)
     call main
-;Step 4)
-    mov r8, qword [_argv]   ;Get the pointer to free this block
-    mov eax, 0x4900 ;Explicitly try to free
-    int 0x21
-exitCommon:
-    mov ecx, 0xFF
-    cmp eax, ecx
-    cmova eax, ecx 
-    or eax, 0x4C00  ;Add the exit code into AH w/o stall
+;Let DOS do any allocation cleanup now
+    mov eax, 0x4C00  
     int 0x21 ;Return to DOS
 ;If there is an allocation error, exit
-exitBad:
+exitBadAlloc:
     lea rdx, badMemStr
     mov eax, 0x0900
     int 0x21
-    mov eax, 0xFF
-    jmp short exitCommon
-badMemStr db "CRT: Not enough memory",0Ah,0Dh,"$"
-noNameStr db "DOS_PROG.UNK",0   ;Default string, can be anything tbh
+    mov eax, 0x4CFF     ;Not enough memory error
+    int 0x21
+exitBadCmdLine:
+    lea rdx, badCmdLin
+    mov eax, 0x0900
+    int 0x21
+    mov eax, 0x4CFE     ;Bad command line passed (geq 128 chars or no CR fnd)
+    int 0x21 
+badMemStr db "CRT: Not enough memory",CR,LF,"$"
+badCmdLin db "CRT: Bad command line passed",CR,LF,"$"
+noNameStr db "DOS_PROG.UNK",0   ;Default string, can be anything
 ;GCC provides a call to this main constructor. Since we 
 ; setup everything in assembly in CRT0, we don't need this.
 __main:
     ret
 
 ;This is to parse command tails as passed by COMMAND.COM
-skipDelimiters:
-;Skips all "standard" command delimiters. This is not the same as FCB 
-; command delimiters but a subset thereof. 
-;These are the same across all codepages.
-;Input: rsi must point to the start of the data string
-;Output: rsi points to the first non-delimiter char
-    push rax
-.l1:
+skipDelims:
+;Points rsi to the first non-delimiter char in a string, loads al with value
     lodsb
-    call isALdelimiter
-    jz .l1
-.exit:
-    pop rax
-    dec rsi ;Point rsi back to the char which is not a command delimiter
+    call isALDelim
+    jz skipDelims
+;Else, point rsi back to that char :)
+    dec rsi
     ret
 
-isALdelimiter:
-;Returns: ZF=NZ if al is not a command separator 
-;         ZF=ZE if al is a command separator
-    cmp al, " "
+findDelimOrCR:
+;Point rsi to the first delim or cmdtail terminator, loads al with value
+    lodsb
+    call isALDelimOrCR
+    jnz findDelimOrCR
+    dec rsi ;Point back to the delim or CR char
+    ret
+
+isALDelimOrCR:
+    cmp al, CR
+    je isALDelim.exit
+isALDelim:
+    cmp al, SPC
     je .exit
-    cmp al, ";"
+    cmp al, TAB
     je .exit
     cmp al, "="
     je .exit
     cmp al, ","
     je .exit
-    cmp al, 09h ;TAB
+    cmp al, ";"
 .exit:
     ret

@@ -1,174 +1,183 @@
      1                                  %use masm
      2                                  BITS 64
-     3                                  ;Need to modify slightly to 
-     4                                  extern main
-     5                                  extern _BSS_START_
-     6                                  extern _BSS_END_
-     7                                  extern _argv    ;Argument Vector
-     8                                  extern _argc    ;Argument Count
-     9                                  extern _env     ;Environment
-    10                                  
-    11                                  global __start__
-    12                                  global __main
-    13                                      section .text
-    14                                  ;TODO:
-    15                                  ;0) Paragraph align the stack
-    16                                  ;1) Clean the BSS
-    17                                  ;2) Process command line to get argc, argv
-    18                                  ;3) Call main.
-    19                                  ;4) If eax > 0FFh, set al = 0FFh and 41h/AH=4Ch exit
-    20                                  ;Future expansion:
-    21                                  ;Hook Int 00h to prevent termination in the event of such a bug.
-    22                                  ; We first print an error message, then pop the RIP value from 
-    23                                  ; the stack, decode the instruction and go to the next 
-    24                                  ; instruction after it!
+     3                                  
+     4                                  ;WARNING WARNING WARNING WARNING WARNING WARNING 
+     5                                  ; cmdline MUST be CR terminated!!!
+     6                                  ;WARNING WARNING WARNING WARNING WARNING WARNING 
+     7                                  
+     8                                  extern main
+     9                                  extern _BSS_START_
+    10                                  extern _BSS_END_
+    11                                  extern _argv    ;Argument Vector
+    12                                  extern _argc    ;Argument Count
+    13                                  extern _env     ;Environment
+    14                                  
+    15                                  global __start__
+    16                                  global __main
+    17                                  
+    18                                  ; Equates used locally in this CRT0
+    19                                  TAB equ 0x09
+    20                                  LF equ 0x0A
+    21                                  CR equ 0x0D
+    22                                  SPC equ 0x20
+    23                                  
+    24                                      section .text
     25                                  __start__:
     26                                  ;BREAKPOINT BREAKPOINT BREAKPOINT BREAKPOINT
     27                                      ;xchg bx, bx
     28                                  ;BREAKPOINT BREAKPOINT BREAKPOINT BREAKPOINT
     29 00000000 FC                          cld ;Ensure the direction is good (DOS does this anyway)
-    30                                  ;Step 0)
-    31                                  ;Realign the stack 
-    32 00000001 4889E0                      mov rax, rsp
-    33 00000004 48C1E804                    shr rax, 4  ;Divide by 16
-    34 00000008 48C1E004                    shl rax, 4  
-    35 0000000C 4889C4                      mov rsp, rax
-    36                                  ;Leave rsp alone now
-    37                                  ;Step 1)
-    38 0000000F 48BF-                       mov rdi, _BSS_START_
-    38 00000011 [0000000000000000] 
-    39 00000019 48B9-                       mov rcx, _BSS_END_
-    39 0000001B [0000000000000000] 
-    40 00000023 4829F9                      sub rcx, rdi
-    41 00000026 31C0                        xor eax, eax
-    42 00000028 F3AA                        rep stosb
-    43                                  ;Step 2)
-    44                                      ;We're gonna be proper and ask DOS to give us the ptr to ENV and CMDLINE
-    45                                      ;The cmdline is guaranteed to be at ptr + 37 (+36 gives number of chars)
-    46 0000002A B800610000                  mov eax, 0x6100 ;New System Service, get environment ptr
-    47 0000002F CD21                        int 0x21
-    48 00000031 488915(00000000)            mov qword [_env], rdx
-    49 00000038 B801610000                  mov eax, 0x6101 ;New System Service, get cmdline ptr pls in rdx
-    50 0000003D CD21                        int 0x21
-    51 0000003F 488D7225                    lea rsi, qword ptr [rdx + 37]   ;Get the ptr to the char array
-    52 00000043 4889F7                      mov rdi, rsi    ;Save the ptr to the string array in rdi
-    53 00000046 BA01000000                  mov edx, 1      ;Set the argc counter to 1 (we always have a filename)
-    54                                  makeCstrings:
-    55 0000004B E810010000                  call skipDelimiters ;Skip leading delimiters
-    56                                  mcslp:
-    57 00000050 AC                          lodsb   ;Get the char here
-    58 00000051 3C0D                        cmp al, 0Dh         ;Did we get the terminating CR?
-    59 00000053 740F                        je endOfCmdLine
-    60 00000055 E814010000                  call isALdelimiter      ;Else, is this a delimiter?
-    61 0000005A 75F4                        jne mcslp               ;If not, keep looking
-    62 0000005C C646FF00                    mov byte [rsi - 1], 0   ;Null terminate this string
-    63 00000060 FFC2                        inc edx                 ;One more string processed
-    64 00000062 EBE7                        jmp short makeCstrings  ;Now skip leading delimiters
-    65                                  endOfCmdLine:
-    66 00000064 C646FF00                    mov byte [rsi - 1], 0   ;Store a final null over terminating 0Dh
-    67 00000068 FFC2                        inc edx ;Add one more entry to argv for the command line itself
-    68 0000006A 488915(00000000)            mov qword [_argc], rdx  ;Save the number of arguments we have
-    69 00000071 B800480000                  mov eax, 0x4800
-    70 00000076 488D1CD511000000            lea rbx, qword [8*rdx + 0x11] ;Get the number of bytes to allocate
-    71 0000007E 48C1EB04                    shr rbx, 4  ;Divide by 16 to get number of paragraphs
-    72 00000082 CD21                        int 21h
-    73 00000084 0F829A000000                jc exitBad
-    74 0000008A 4889C5                      mov rbp, rax    ;Store the ptr to the array here
-    75                                  ;argv array must have a qword at _argv[_argc] = 0
-    76 0000008D 48892D(00000000)            mov qword [_argv], rbp  ;Save the ptr to the char* array
-    77                                  ;Place pointer to filename in argv array
-    78 00000094 B802610000                  mov eax, 6102h  ;Get pointer in rdx
-    79 00000099 CD21                        int 21h         ;Can fail with CF=CY or RDX=<NUL>
-    80 0000009B 730C                        jnc .nameOk
-    81 0000009D 4885D2                      test rdx, rdx   
-    82 000000A0 7507                        jnz .nameOk
-    83 000000A2 488D15A9000000              lea rdx, noNameStr  ;Get the default 8.3,<NUL> string
-    84                                  .nameOk:
-    85 000000A9 48895500                    mov qword [rbp], rdx    ;Store the name pointer here
-    86 000000AD 48833D(00000000)01          cmp qword [_argc], 1    ;Do we just have a file name?
-    87 000000B5 742D                        je short endArgv
-    88                                  ;Get pointers to the ASCIIZ command line arguments for argv
-    89 000000B7 4889FE                      mov rsi, rdi    ;Get the start of the command line string into rsi
-    90 000000BA BA01000000                  mov rdx, 1      ;Go to the first entry
-    91                                      ;This cannot start by ending up on a null so we ok!
-    92 000000BF 31C9                        xor ecx, ecx
-    93 000000C1 FFC9                        dec ecx     ;Ensure we can repne scasb 
-    94                                  buildArgv:
-    95 000000C3 E898000000                  call skipDelimiters             
-    96 000000C8 488974D500                  mov qword [rbp + 8*rdx], rsi    ;Save rsi as the ptr to the string
-    97 000000CD FFC2                        inc edx
-    98 000000CF 483B15(00000000)            cmp rdx, qword [_argc]          ;Are we equal yet?
-    99 000000D6 740C                        je endArgv
-   100 000000D8 31C0                        xor eax, eax
-   101 000000DA 4889F7                      mov rdi, rsi
-   102 000000DD F2AE                        repne scasb     ;Scan off the null
-   103 000000DF 4889FE                      mov rsi, rdi    ;rdi points past the null
-   104 000000E2 EBDF                        jmp short buildArgv ;Now skip the delimiters again!
-   105                                  endArgv:
-   106 000000E4 31C0                        xor eax, eax
-   107 000000E6 488944D500                  mov qword [rbp + 8*rdx], rax    ;Store a ptr to NULL
-   108 000000EB 488B0D(00000000)            mov rcx, qword [_argc]  ;Get the regs in for the calling convention
-   109 000000F2 488B15(00000000)            mov rdx, qword [_argv]  ;Get the regs in for the calling convention
-   110 000000F9 4C8B05(00000000)            mov r8, qword [_env]    ;Get the optional, UNPARSED environment
-   111                                      ;We pass a ptr to the environment but it is unparsed as ANSI doesn't 
-   112                                      ; request this!
-   113                                  ;Step 3) 
-   114 00000100 E8(00000000)                call main
-   115                                  ;Step 4)
-   116 00000105 4C8B05(00000000)            mov r8, qword [_argv]   ;Get the pointer to free this block
-   117 0000010C B800490000                  mov eax, 0x4900 ;Explicitly try to free
-   118 00000111 CD21                        int 0x21
-   119                                  exitCommon:
-   120 00000113 B9FF000000                  mov ecx, 0xFF
-   121 00000118 39C8                        cmp eax, ecx
-   122 0000011A 0F47C1                      cmova eax, ecx 
-   123 0000011D 0D004C0000                  or eax, 0x4C00  ;Add the exit code into AH w/o stall
-   124 00000122 CD21                        int 0x21 ;Return to DOS
-   125                                  ;If there is an allocation error, exit
-   126                                  exitBad:
-   127 00000124 488D150E000000              lea rdx, badMemStr
-   128 0000012B B800090000                  mov eax, 0x0900
-   129 00000130 CD21                        int 0x21
-   130 00000132 B8FF000000                  mov eax, 0xFF
-   131 00000137 EBDA                        jmp short exitCommon
-   132 00000139 4352543A204E6F7420-     badMemStr db "CRT: Not enough memory",0Ah,0Dh,"$"
-   132 00000142 656E6F756768206D65-
-   132 0000014B 6D6F72790A0D24     
-   133 00000152 444F535F50524F472E-     noNameStr db "DOS_PROG.UNK",0   ;Default string, can be anything tbh
-   133 0000015B 554E4B00           
-   134                                  ;GCC provides a call to this main constructor. Since we 
-   135                                  ; setup everything in assembly in CRT0, we don't need this.
-   136                                  __main:
-   137 0000015F C3                          ret
-   138                                  
-   139                                  ;This is to parse command tails as passed by COMMAND.COM
-   140                                  skipDelimiters:
-   141                                  ;Skips all "standard" command delimiters. This is not the same as FCB 
-   142                                  ; command delimiters but a subset thereof. 
-   143                                  ;These are the same across all codepages.
-   144                                  ;Input: rsi must point to the start of the data string
-   145                                  ;Output: rsi points to the first non-delimiter char
-   146 00000160 50                          push rax
-   147                                  .l1:
-   148 00000161 AC                          lodsb
-   149 00000162 E807000000                  call isALdelimiter
-   150 00000167 74F8                        jz .l1
-   151                                  .exit:
-   152 00000169 58                          pop rax
-   153 0000016A 48FFCE                      dec rsi ;Point rsi back to the char which is not a command delimiter
-   154 0000016D C3                          ret
-   155                                  
-   156                                  isALdelimiter:
-   157                                  ;Returns: ZF=NZ if al is not a command separator 
-   158                                  ;         ZF=ZE if al is a command separator
-   159 0000016E 3C20                        cmp al, " "
-   160 00000170 740E                        je .exit
-   161 00000172 3C3B                        cmp al, ";"
-   162 00000174 740A                        je .exit
-   163 00000176 3C3D                        cmp al, "="
-   164 00000178 7406                        je .exit
-   165 0000017A 3C2C                        cmp al, ","
-   166 0000017C 7402                        je .exit
-   167 0000017E 3C09                        cmp al, 09h ;TAB
-   168                                  .exit:
-   169 00000180 C3                          ret
+    30                                  ;Realign the stack 
+    31 00000001 4889E0                      mov rax, rsp
+    32 00000004 48C1E804                    shr rax, 4  ;Divide by 16
+    33 00000008 48C1E004                    shl rax, 4  
+    34 0000000C 4889C4                      mov rsp, rax
+    35                                  ;Leave rsp alone now
+    36 0000000F 48BF-                       mov rdi, _BSS_START_
+    36 00000011 [0000000000000000] 
+    37 00000019 48B9-                       mov rcx, _BSS_END_
+    37 0000001B [0000000000000000] 
+    38 00000023 4829F9                      sub rcx, rdi
+    39 00000026 31C0                        xor eax, eax
+    40 00000028 F3AA                        rep stosb
+    41                                  ;We're gonna be proper and ask DOS to give us the ptr to ENV and CMDLINE
+    42                                  ;The cmdline is guaranteed to be at ptr + 37 (+36 gives number of chars)
+    43                                  ; We ignore the char count (not a great idea but we do this for most apps)
+    44 0000002A B800610000                  mov eax, 0x6100 ;New System Service, get environment ptr
+    45 0000002F CD21                        int 0x21
+    46 00000031 488915(00000000)            mov qword [_env], rdx
+    47 00000038 B801610000                  mov eax, 0x6101 ;New System Service, get cmdline ptr pls in rdx
+    48 0000003D CD21                        int 0x21
+    49 0000003F 488D7225                    lea rsi, qword ptr [rdx + 37]   ;Get the ptr to the char array
+    50                                  ;Here we gotta ensure the first byte is a value less than 128 and then
+    51                                  ; check if @ byte [rsi + val] = CR. If not, fail
+    52 00000043 0FB646FF                    movzx eax, byte [rsi - 1]   ;Get cmdline "len"
+    53 00000047 3D80000000                  cmp eax, 0x80    
+    54 0000004C 0F83DE000000                jnb exitBadCmdLine
+    55 00000052 803C060D                    cmp byte [rsi + rax], CR    ;If not a CR here, then bad cmdline
+    56 00000056 0F85D4000000                jne exitBadCmdLine
+    57 0000005C B800480000                  mov eax, 0x4800 ;Allocate a block
+    58 00000061 BB08000000                  mov ebx, 0x8    ;8 paragraphs (128 bytes) in length
+    59 00000066 CD21                        int 21h
+    60 00000068 0F82AD000000                jc exitBadAlloc
+    61 0000006E 4889C7                      mov rdi, rax    ;Start storing cmdline args in here
+    62 00000071 4889C5                      mov rbp, rax    ;Save the string array ptr in rbp
+    63 00000074 B901000000                  mov ecx, 1      ;Number of strings cnt (1 for filename)
+    64                                  makeCstrings:
+    65 00000079 E80D010000                  call skipDelims ;Skip delimiters
+    66 0000007E 3C0D                        cmp al, CR
+    67 00000080 7413                        je endStrBuild  ;Terminate the string build
+    68                                  .lp:
+    69 00000082 AC                          lodsb
+    70 00000083 AA                          stosb
+    71 00000084 E81A010000                  call isALDelimOrCR
+    72 00000089 75F7                        jne .lp 
+    73 0000008B FFC1                        inc ecx     ;We just finished a string
+    74 0000008D C647FF00                    mov byte [rdi - 1], 0   ;Store a null over the last char we just copied
+    75 00000091 3C0D                        cmp al, CR  ;If we just ended on a terminator finish, else...
+    76 00000093 75E4                        jne makeCstrings    ;...go to next argument or terminator
+    77                                  endStrBuild:
+    78 00000095 48890D(00000000)            mov qword [_argc], rcx  ;Store the arg count in rcx
+    79 0000009C 89CB                        mov ebx, ecx 
+    80 0000009E FFC3                        inc ebx     ;Make space for terminating nullptr too
+    81 000000A0 C1E303                      shl ebx, 3  ;Multiply by 8 bytes to get number of bytes to allocate
+    82 000000A3 83C30F                      add ebx, 0x0F   ;Round up
+    83 000000A6 C1EB04                      shr ebx, 4  ;Turn into number of paragraphs to allocate
+    84 000000A9 B800480000                  mov eax, 0x4800
+    85 000000AE CD21                        int 21h
+    86 000000B0 7269                        jc exitBadAlloc
+    87 000000B2 488905(00000000)            mov qword [_argv], rax
+    88 000000B9 4889C6                      mov rsi, rax    ;Have rsi point to the array where we will store ptrs
+    89 000000BC B802610000                  mov eax, 6102h  ;Get the filename ptr in rdx
+    90 000000C1 CD21                        int 21h
+    91 000000C3 730C                        jnc filenameOk
+    92 000000C5 4885D2                      test rdx, rdx
+    93 000000C8 7307                        jnc filenameOk
+    94 000000CA 488D15AC000000              lea rdx, noNameStr
+    95                                  filenameOk:
+    96 000000D1 488916                      mov qword [rsi], rdx    ;Store the ptr here
+    97 000000D4 4883C608                    add rsi, 8      ;Go to next entry in the array
+    98 000000D8 89CA                        mov edx, ecx    ;Get the number of args passed into edx 
+    99 000000DA FFCA                        dec edx         ;Decrement the number of entries left to process 
+   100 000000DC 7419                        jz argvDone
+   101 000000DE 4889EF                      mov rdi, rbp    ;Get back the ptr to the cmd array
+   102 000000E1 31C0                        xor eax, eax    ;Make nullptr but also for compare to al
+   103 000000E3 B9FFFFFFFF                  mov ecx, -1     ;Use for repne scasb
+   104                                  argvProcess:
+   105 000000E8 48893E                      mov qword [rsi], rdi
+   106 000000EB 4883C608                    add rsi, 8      ;Goto next entry in the array
+   107 000000EF FFCA                        dec edx
+   108 000000F1 7404                        jz argvDone
+   109 000000F3 F2AE                        repne scasb     ;Find the next null, rdi points to next string
+   110 000000F5 EBF1                        jmp short argvProcess
+   111                                  argvDone:
+   112 000000F7 488906                      mov qword [rsi], rax    ;Store the final null ptr we made space for
+   113                                  prepEnter:
+   114 000000FA 488B0D(00000000)            mov rcx, qword [_argc]  ;Get count for the calling convention
+   115 00000101 488B15(00000000)            mov rdx, qword [_argv]  ;Get vec ptr for the calling convention
+   116 00000108 4C8B05(00000000)            mov r8, qword [_env]    ;Get the optional, UNPARSED environment ptr
+   117                                  ;Call the main function :)
+   118 0000010F E8(00000000)                call main
+   119                                  ;Let DOS do any allocation cleanup now
+   120 00000114 B8004C0000                  mov eax, 0x4C00  
+   121 00000119 CD21                        int 0x21 ;Return to DOS
+   122                                  ;If there is an allocation error, exit
+   123                                  exitBadAlloc:
+   124 0000011B 488D1523000000              lea rdx, badMemStr
+   125 00000122 B800090000                  mov eax, 0x0900
+   126 00000127 CD21                        int 0x21
+   127 00000129 B8FF4C0000                  mov eax, 0x4CFF     ;Not enough memory error
+   128 0000012E CD21                        int 0x21
+   129                                  exitBadCmdLine:
+   130 00000130 488D1527000000              lea rdx, badCmdLin
+   131 00000137 B800090000                  mov eax, 0x0900
+   132 0000013C CD21                        int 0x21
+   133 0000013E B8FE4C0000                  mov eax, 0x4CFE     ;Bad command line passed (geq 128 chars or no CR fnd)
+   134 00000143 CD21                        int 0x21 
+   135 00000145 4352543A204E6F7420-     badMemStr db "CRT: Not enough memory",CR,LF,"$"
+   135 0000014E 656E6F756768206D65-
+   135 00000157 6D6F72790D0A24     
+   136 0000015E 4352543A2042616420-     badCmdLin db "CRT: Bad command line passed",CR,LF,"$"
+   136 00000167 636F6D6D616E64206C-
+   136 00000170 696E65207061737365-
+   136 00000179 640D0A24           
+   137 0000017D 444F535F50524F472E-     noNameStr db "DOS_PROG.UNK",0   ;Default string, can be anything
+   137 00000186 554E4B00           
+   138                                  ;GCC provides a call to this main constructor. Since we 
+   139                                  ; setup everything in assembly in CRT0, we don't need this.
+   140                                  __main:
+   141 0000018A C3                          ret
+   142                                  
+   143                                  ;This is to parse command tails as passed by COMMAND.COM
+   144                                  skipDelims:
+   145                                  ;Points rsi to the first non-delimiter char in a string, loads al with value
+   146 0000018B AC                          lodsb
+   147 0000018C E816000000                  call isALDelim
+   148 00000191 74F8                        jz skipDelims
+   149                                  ;Else, point rsi back to that char :)
+   150 00000193 48FFCE                      dec rsi
+   151 00000196 C3                          ret
+   152                                  
+   153                                  findDelimOrCR:
+   154                                  ;Point rsi to the first delim or cmdtail terminator, loads al with value
+   155 00000197 AC                          lodsb
+   156 00000198 E806000000                  call isALDelimOrCR
+   157 0000019D 75F8                        jnz findDelimOrCR
+   158 0000019F 48FFCE                      dec rsi ;Point back to the delim or CR char
+   159 000001A2 C3                          ret
+   160                                  
+   161                                  isALDelimOrCR:
+   162 000001A3 3C0D                        cmp al, CR
+   163 000001A5 7412                        je isALDelim.exit
+   164                                  isALDelim:
+   165 000001A7 3C20                        cmp al, SPC
+   166 000001A9 740E                        je .exit
+   167 000001AB 3C09                        cmp al, TAB
+   168 000001AD 740A                        je .exit
+   169 000001AF 3C3D                        cmp al, "="
+   170 000001B1 7406                        je .exit
+   171 000001B3 3C2C                        cmp al, ","
+   172 000001B5 7402                        je .exit
+   173 000001B7 3C3B                        cmp al, ";"
+   174                                  .exit:
+   175 000001B9 C3                          ret
