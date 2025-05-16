@@ -113,7 +113,7 @@ CHAR DOSAPI __WriteDiskRaw(LPVOID lpBuffer, DRIVE_INDEX diIndex, QWORD qwStartSe
 
 BOOL DOSAPI ReadDiskRaw (LPVOID lpBuffer, DRIVE_INDEX diIndex, QWORD qwStartSector, DWORD dwNumberOfSectors){
     BOOL retCode = TRUE;
-    WORD errorCode = __ReadDiskRaw(lpBuffer, diIndex, qwStartSector, dwNumberOfSectorsEND_ASM
+    WORD errorCode = __ReadDiskRaw(lpBuffer, diIndex, qwStartSector, dwNumberOfSectors);
     if(!errorCode){
         rawIOError = errorCode;
         retCode = FALSE;
@@ -121,7 +121,7 @@ BOOL DOSAPI ReadDiskRaw (LPVOID lpBuffer, DRIVE_INDEX diIndex, QWORD qwStartSect
 }
 BOOL DOSAPI WriteDiskRaw (LPVOID lpBuffer, DRIVE_INDEX diIndex, QWORD qwStartSector, DWORD dwNumberOfSectors){
     BOOL retCode = TRUE;
-    WORD errorCode = __WriteDiskRaw(lpBuffer, diIndex, qwStartSector, dwNumberOfSectorsEND_ASM
+    WORD errorCode = __WriteDiskRaw(lpBuffer, diIndex, qwStartSector, dwNumberOfSectors);
     if(!errorCode){
         rawIOError = errorCode;
         retCode = FALSE;
