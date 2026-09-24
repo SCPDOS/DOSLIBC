@@ -33,11 +33,6 @@ __start__:
     shl rax, 4  
     mov rsp, rax
 ;Leave rsp alone now
-    mov rdi, _BSS_START_
-    mov rcx, _BSS_END_
-    sub rcx, rdi
-    xor eax, eax
-    rep stosb
 ;We're gonna be proper and ask DOS to give us the ptr to ENV and CMDLINE
 ;The cmdline is guaranteed to be at ptr + 37 (+36 gives number of chars)
 ; We ignore the char count (not a great idea but we do this for most apps)

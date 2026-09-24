@@ -33,151 +33,144 @@
     33 00000008 48C1E004                    shl rax, 4  
     34 0000000C 4889C4                      mov rsp, rax
     35                                  ;Leave rsp alone now
-    36 0000000F 48BF-                       mov rdi, _BSS_START_
-    36 00000011 [0000000000000000] 
-    37 00000019 48B9-                       mov rcx, _BSS_END_
-    37 0000001B [0000000000000000] 
-    38 00000023 4829F9                      sub rcx, rdi
-    39 00000026 31C0                        xor eax, eax
-    40 00000028 F3AA                        rep stosb
-    41                                  ;We're gonna be proper and ask DOS to give us the ptr to ENV and CMDLINE
-    42                                  ;The cmdline is guaranteed to be at ptr + 37 (+36 gives number of chars)
-    43                                  ; We ignore the char count (not a great idea but we do this for most apps)
-    44 0000002A B800610000                  mov eax, 0x6100 ;New System Service, get environment ptr
-    45 0000002F CD21                        int 0x21
-    46 00000031 488915(00000000)            mov qword [_env], rdx
-    47 00000038 B801610000                  mov eax, 0x6101 ;New System Service, get cmdline ptr pls in rdx
-    48 0000003D CD21                        int 0x21
-    49 0000003F 488D7225                    lea rsi, qword ptr [rdx + 37]   ;Get the ptr to the char array
-    50                                  ;Here we gotta ensure the first byte is a value less than 128 and then
-    51                                  ; check if @ byte [rsi + val] = CR. If not, fail
-    52 00000043 0FB646FF                    movzx eax, byte [rsi - 1]   ;Get cmdline "len"
-    53 00000047 3D80000000                  cmp eax, 0x80    
-    54 0000004C 0F83DE000000                jnb exitBadCmdLine
-    55 00000052 803C060D                    cmp byte [rsi + rax], CR    ;If not a CR here, then bad cmdline
-    56 00000056 0F85D4000000                jne exitBadCmdLine
-    57 0000005C B800480000                  mov eax, 0x4800 ;Allocate a block
-    58 00000061 BB08000000                  mov ebx, 0x8    ;8 paragraphs (128 bytes) in length
-    59 00000066 CD21                        int 21h
-    60 00000068 0F82AD000000                jc exitBadAlloc
-    61 0000006E 4889C7                      mov rdi, rax    ;Start storing cmdline args in here
-    62 00000071 4889C5                      mov rbp, rax    ;Save the string array ptr in rbp
-    63 00000074 B901000000                  mov ecx, 1      ;Number of strings cnt (1 for filename)
-    64                                  makeCstrings:
-    65 00000079 E80D010000                  call skipDelims ;Skip delimiters
-    66 0000007E 3C0D                        cmp al, CR
-    67 00000080 7413                        je endStrBuild  ;Terminate the string build
-    68                                  .lp:
-    69 00000082 AC                          lodsb
-    70 00000083 AA                          stosb
-    71 00000084 E81A010000                  call isALDelimOrCR
-    72 00000089 75F7                        jne .lp 
-    73 0000008B FFC1                        inc ecx     ;We just finished a string
-    74 0000008D C647FF00                    mov byte [rdi - 1], 0   ;Store a null over the last char we just copied
-    75 00000091 3C0D                        cmp al, CR  ;If we just ended on a terminator finish, else...
-    76 00000093 75E4                        jne makeCstrings    ;...go to next argument or terminator
-    77                                  endStrBuild:
-    78 00000095 48890D(00000000)            mov qword [_argc], rcx  ;Store the arg count in rcx
-    79 0000009C 89CB                        mov ebx, ecx 
-    80 0000009E FFC3                        inc ebx     ;Make space for terminating nullptr too
-    81 000000A0 C1E303                      shl ebx, 3  ;Multiply by 8 bytes to get number of bytes to allocate
-    82 000000A3 83C30F                      add ebx, 0x0F   ;Round up
-    83 000000A6 C1EB04                      shr ebx, 4  ;Turn into number of paragraphs to allocate
-    84 000000A9 B800480000                  mov eax, 0x4800
-    85 000000AE CD21                        int 21h
-    86 000000B0 7269                        jc exitBadAlloc
-    87 000000B2 488905(00000000)            mov qword [_argv], rax
-    88 000000B9 4889C6                      mov rsi, rax    ;Have rsi point to the array where we will store ptrs
-    89 000000BC B802610000                  mov eax, 6102h  ;Get the filename ptr in rdx
-    90 000000C1 CD21                        int 21h
-    91 000000C3 730C                        jnc filenameOk
-    92 000000C5 4885D2                      test rdx, rdx
-    93 000000C8 7307                        jnc filenameOk
-    94 000000CA 488D15AC000000              lea rdx, noNameStr
-    95                                  filenameOk:
-    96 000000D1 488916                      mov qword [rsi], rdx    ;Store the ptr here
-    97 000000D4 4883C608                    add rsi, 8      ;Go to next entry in the array
-    98 000000D8 89CA                        mov edx, ecx    ;Get the number of args passed into edx 
-    99 000000DA FFCA                        dec edx         ;Decrement the number of entries left to process 
-   100 000000DC 7419                        jz argvDone
-   101 000000DE 4889EF                      mov rdi, rbp    ;Get back the ptr to the cmd array
-   102 000000E1 31C0                        xor eax, eax    ;Make nullptr but also for compare to al
-   103 000000E3 B9FFFFFFFF                  mov ecx, -1     ;Use for repne scasb
-   104                                  argvProcess:
-   105 000000E8 48893E                      mov qword [rsi], rdi
-   106 000000EB 4883C608                    add rsi, 8      ;Goto next entry in the array
-   107 000000EF FFCA                        dec edx
-   108 000000F1 7404                        jz argvDone
-   109 000000F3 F2AE                        repne scasb     ;Find the next null, rdi points to next string
-   110 000000F5 EBF1                        jmp short argvProcess
-   111                                  argvDone:
-   112 000000F7 488906                      mov qword [rsi], rax    ;Store the final null ptr we made space for
-   113                                  prepEnter:
-   114 000000FA 488B0D(00000000)            mov rcx, qword [_argc]  ;Get count for the calling convention
-   115 00000101 488B15(00000000)            mov rdx, qword [_argv]  ;Get vec ptr for the calling convention
-   116 00000108 4C8B05(00000000)            mov r8, qword [_env]    ;Get the optional, UNPARSED environment ptr
-   117                                  ;Call the main function :)
-   118 0000010F E8(00000000)                call main
-   119                                  ;Let DOS do any allocation cleanup now
-   120 00000114 B8004C0000                  mov eax, 0x4C00  
-   121 00000119 CD21                        int 0x21 ;Return to DOS
-   122                                  ;If there is an allocation error, exit
-   123                                  exitBadAlloc:
-   124 0000011B 488D1523000000              lea rdx, badMemStr
-   125 00000122 B800090000                  mov eax, 0x0900
-   126 00000127 CD21                        int 0x21
-   127 00000129 B8FF4C0000                  mov eax, 0x4CFF     ;Not enough memory error
-   128 0000012E CD21                        int 0x21
-   129                                  exitBadCmdLine:
-   130 00000130 488D1527000000              lea rdx, badCmdLin
-   131 00000137 B800090000                  mov eax, 0x0900
-   132 0000013C CD21                        int 0x21
-   133 0000013E B8FE4C0000                  mov eax, 0x4CFE     ;Bad command line passed (geq 128 chars or no CR fnd)
-   134 00000143 CD21                        int 0x21 
-   135 00000145 4352543A204E6F7420-     badMemStr db "CRT: Not enough memory",CR,LF,"$"
-   135 0000014E 656E6F756768206D65-
-   135 00000157 6D6F72790D0A24     
-   136 0000015E 4352543A2042616420-     badCmdLin db "CRT: Bad command line passed",CR,LF,"$"
-   136 00000167 636F6D6D616E64206C-
-   136 00000170 696E65207061737365-
-   136 00000179 640D0A24           
-   137 0000017D 444F535F50524F472E-     noNameStr db "DOS_PROG.UNK",0   ;Default string, can be anything
-   137 00000186 554E4B00           
-   138                                  ;GCC provides a call to this main constructor. Since we 
-   139                                  ; setup everything in assembly in CRT0, we don't need this.
-   140                                  __main:
-   141 0000018A C3                          ret
-   142                                  
-   143                                  ;This is to parse command tails as passed by COMMAND.COM
-   144                                  skipDelims:
-   145                                  ;Points rsi to the first non-delimiter char in a string, loads al with value
-   146 0000018B AC                          lodsb
-   147 0000018C E816000000                  call isALDelim
-   148 00000191 74F8                        jz skipDelims
-   149                                  ;Else, point rsi back to that char :)
-   150 00000193 48FFCE                      dec rsi
-   151 00000196 C3                          ret
-   152                                  
-   153                                  findDelimOrCR:
-   154                                  ;Point rsi to the first delim or cmdtail terminator, loads al with value
-   155 00000197 AC                          lodsb
-   156 00000198 E806000000                  call isALDelimOrCR
-   157 0000019D 75F8                        jnz findDelimOrCR
-   158 0000019F 48FFCE                      dec rsi ;Point back to the delim or CR char
-   159 000001A2 C3                          ret
-   160                                  
-   161                                  isALDelimOrCR:
-   162 000001A3 3C0D                        cmp al, CR
-   163 000001A5 7412                        je isALDelim.exit
-   164                                  isALDelim:
-   165 000001A7 3C20                        cmp al, SPC
-   166 000001A9 740E                        je .exit
-   167 000001AB 3C09                        cmp al, TAB
-   168 000001AD 740A                        je .exit
-   169 000001AF 3C3D                        cmp al, "="
-   170 000001B1 7406                        je .exit
-   171 000001B3 3C2C                        cmp al, ","
-   172 000001B5 7402                        je .exit
-   173 000001B7 3C3B                        cmp al, ";"
-   174                                  .exit:
-   175 000001B9 C3                          ret
+    36                                  ;We're gonna be proper and ask DOS to give us the ptr to ENV and CMDLINE
+    37                                  ;The cmdline is guaranteed to be at ptr + 37 (+36 gives number of chars)
+    38                                  ; We ignore the char count (not a great idea but we do this for most apps)
+    39 0000000F B800610000                  mov eax, 0x6100 ;New System Service, get environment ptr
+    40 00000014 CD21                        int 0x21
+    41 00000016 488915(00000000)            mov qword [_env], rdx
+    42 0000001D B801610000                  mov eax, 0x6101 ;New System Service, get cmdline ptr pls in rdx
+    43 00000022 CD21                        int 0x21
+    44 00000024 488D7225                    lea rsi, qword ptr [rdx + 37]   ;Get the ptr to the char array
+    45                                  ;Here we gotta ensure the first byte is a value less than 128 and then
+    46                                  ; check if @ byte [rsi + val] = CR. If not, fail
+    47 00000028 0FB646FF                    movzx eax, byte [rsi - 1]   ;Get cmdline "len"
+    48 0000002C 3D80000000                  cmp eax, 0x80    
+    49 00000031 0F83DE000000                jnb exitBadCmdLine
+    50 00000037 803C060D                    cmp byte [rsi + rax], CR    ;If not a CR here, then bad cmdline
+    51 0000003B 0F85D4000000                jne exitBadCmdLine
+    52 00000041 B800480000                  mov eax, 0x4800 ;Allocate a block
+    53 00000046 BB08000000                  mov ebx, 0x8    ;8 paragraphs (128 bytes) in length
+    54 0000004B CD21                        int 21h
+    55 0000004D 0F82AD000000                jc exitBadAlloc
+    56 00000053 4889C7                      mov rdi, rax    ;Start storing cmdline args in here
+    57 00000056 4889C5                      mov rbp, rax    ;Save the string array ptr in rbp
+    58 00000059 B901000000                  mov ecx, 1      ;Number of strings cnt (1 for filename)
+    59                                  makeCstrings:
+    60 0000005E E80D010000                  call skipDelims ;Skip delimiters
+    61 00000063 3C0D                        cmp al, CR
+    62 00000065 7413                        je endStrBuild  ;Terminate the string build
+    63                                  .lp:
+    64 00000067 AC                          lodsb
+    65 00000068 AA                          stosb
+    66 00000069 E81A010000                  call isALDelimOrCR
+    67 0000006E 75F7                        jne .lp 
+    68 00000070 FFC1                        inc ecx     ;We just finished a string
+    69 00000072 C647FF00                    mov byte [rdi - 1], 0   ;Store a null over the last char we just copied
+    70 00000076 3C0D                        cmp al, CR  ;If we just ended on a terminator finish, else...
+    71 00000078 75E4                        jne makeCstrings    ;...go to next argument or terminator
+    72                                  endStrBuild:
+    73 0000007A 48890D(00000000)            mov qword [_argc], rcx  ;Store the arg count in rcx
+    74 00000081 89CB                        mov ebx, ecx 
+    75 00000083 FFC3                        inc ebx     ;Make space for terminating nullptr too
+    76 00000085 C1E303                      shl ebx, 3  ;Multiply by 8 bytes to get number of bytes to allocate
+    77 00000088 83C30F                      add ebx, 0x0F   ;Round up
+    78 0000008B C1EB04                      shr ebx, 4  ;Turn into number of paragraphs to allocate (could optimise?)
+    79 0000008E B800480000                  mov eax, 0x4800
+    80 00000093 CD21                        int 21h
+    81 00000095 7269                        jc exitBadAlloc
+    82 00000097 488905(00000000)            mov qword [_argv], rax
+    83 0000009E 4889C6                      mov rsi, rax    ;Have rsi point to the array where we will store ptrs
+    84 000000A1 B802610000                  mov eax, 6102h  ;Get the filename ptr in rdx
+    85 000000A6 CD21                        int 21h
+    86 000000A8 730C                        jnc filenameOk
+    87 000000AA 4885D2                      test rdx, rdx
+    88 000000AD 7307                        jnc filenameOk
+    89 000000AF 488D15AC000000              lea rdx, noNameStr
+    90                                  filenameOk:
+    91 000000B6 488916                      mov qword [rsi], rdx    ;Store the ptr here
+    92 000000B9 4883C608                    add rsi, 8      ;Go to next entry in the array
+    93 000000BD 89CA                        mov edx, ecx    ;Get the number of args passed into edx 
+    94 000000BF FFCA                        dec edx         ;Decrement the number of entries left to process 
+    95 000000C1 7419                        jz argvDone
+    96 000000C3 4889EF                      mov rdi, rbp    ;Get back the ptr to the cmd array
+    97 000000C6 31C0                        xor eax, eax    ;Make nullptr but also for compare to al
+    98 000000C8 B9FFFFFFFF                  mov ecx, -1     ;Use for repne scasb
+    99                                  argvProcess:
+   100 000000CD 48893E                      mov qword [rsi], rdi
+   101 000000D0 4883C608                    add rsi, 8      ;Goto next entry in the array
+   102 000000D4 FFCA                        dec edx
+   103 000000D6 7404                        jz argvDone
+   104 000000D8 F2AE                        repne scasb     ;Find the next null, rdi points to next string
+   105 000000DA EBF1                        jmp short argvProcess
+   106                                  argvDone:
+   107 000000DC 488906                      mov qword [rsi], rax    ;Store the final null ptr we made space for
+   108                                  prepEnter:
+   109 000000DF 488B0D(00000000)            mov rcx, qword [_argc]  ;Get count for the calling convention
+   110 000000E6 488B15(00000000)            mov rdx, qword [_argv]  ;Get vec ptr for the calling convention
+   111 000000ED 4C8B05(00000000)            mov r8, qword [_env]    ;Get the optional, UNPARSED environment ptr
+   112                                  ;Call the main function :)
+   113 000000F4 E8(00000000)                call main
+   114                                  ;Let DOS do any allocation cleanup now
+   115 000000F9 B8004C0000                  mov eax, 0x4C00  
+   116 000000FE CD21                        int 0x21 ;Return to DOS
+   117                                  ;If there is an allocation error, exit
+   118                                  exitBadAlloc:
+   119 00000100 488D1523000000              lea rdx, badMemStr
+   120 00000107 B800090000                  mov eax, 0x0900
+   121 0000010C CD21                        int 0x21
+   122 0000010E B8FF4C0000                  mov eax, 0x4CFF     ;Not enough memory error
+   123 00000113 CD21                        int 0x21
+   124                                  exitBadCmdLine:
+   125 00000115 488D1527000000              lea rdx, badCmdLin
+   126 0000011C B800090000                  mov eax, 0x0900
+   127 00000121 CD21                        int 0x21
+   128 00000123 B8FE4C0000                  mov eax, 0x4CFE     ;Bad command line passed (geq 128 chars or no CR fnd)
+   129 00000128 CD21                        int 0x21 
+   130 0000012A 4352543A204E6F7420-     badMemStr db "CRT: Not enough memory",CR,LF,"$"
+   130 00000133 656E6F756768206D65-
+   130 0000013C 6D6F72790D0A24     
+   131 00000143 4352543A2042616420-     badCmdLin db "CRT: Bad command line passed",CR,LF,"$"
+   131 0000014C 636F6D6D616E64206C-
+   131 00000155 696E65207061737365-
+   131 0000015E 640D0A24           
+   132 00000162 444F535F50524F472E-     noNameStr db "DOS_PROG.UNK",0   ;Default string, can be anything
+   132 0000016B 554E4B00           
+   133                                  ;GCC provides a call to this main constructor. Since we 
+   134                                  ; setup everything in assembly in CRT0, we don't need this.
+   135                                  __main:
+   136 0000016F C3                          ret
+   137                                  
+   138                                  ;This is to parse command tails as passed by COMMAND.COM
+   139                                  skipDelims:
+   140                                  ;Points rsi to the first non-delimiter char in a string, loads al with value
+   141 00000170 AC                          lodsb
+   142 00000171 E816000000                  call isALDelim
+   143 00000176 74F8                        jz skipDelims
+   144                                  ;Else, point rsi back to that char :)
+   145 00000178 48FFCE                      dec rsi
+   146 0000017B C3                          ret
+   147                                  
+   148                                  findDelimOrCR:
+   149                                  ;Point rsi to the first delim or cmdtail terminator, loads al with value
+   150 0000017C AC                          lodsb
+   151 0000017D E806000000                  call isALDelimOrCR
+   152 00000182 75F8                        jnz findDelimOrCR
+   153 00000184 48FFCE                      dec rsi ;Point back to the delim or CR char
+   154 00000187 C3                          ret
+   155                                  
+   156                                  isALDelimOrCR:
+   157 00000188 3C0D                        cmp al, CR
+   158 0000018A 7412                        je isALDelim.exit
+   159                                  isALDelim:
+   160 0000018C 3C20                        cmp al, SPC
+   161 0000018E 740E                        je .exit
+   162 00000190 3C09                        cmp al, TAB
+   163 00000192 740A                        je .exit
+   164 00000194 3C3D                        cmp al, "="
+   165 00000196 7406                        je .exit
+   166 00000198 3C2C                        cmp al, ","
+   167 0000019A 7402                        je .exit
+   168 0000019C 3C3B                        cmp al, ";"
+   169                                  .exit:
+   170 0000019E C3                          ret

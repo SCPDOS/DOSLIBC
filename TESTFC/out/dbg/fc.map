@@ -5,6 +5,8 @@ Archive member included to satisfy reference by file (symbol)
 ./../IO/./out/lib/io.lib(scpdos.lib)
                               ./../IO/./out/lib/io.lib(io.o) (GetLastError)
 
+There are no discarded input sections
+
 Memory Configuration
 
 Name             Origin             Length             Attributes
@@ -35,127 +37,127 @@ LOAD ./../CRT0/out/lib/crt0.lib
 
 .text           0x0000000140001000     0x1800 load address 0x0000000000001000
  *(.text)
- .text          0x0000000140001000      0x1ba ./../CRT0/out/lib/crt0.lib
+ .text          0x0000000140001000      0x19f ./../CRT0/out/lib/crt0.lib
                 0x0000000140001000                __start__
-                0x000000014000118a                __main
- *fill*         0x00000001400011ba        0x6 
- .text          0x00000001400011c0      0x5a0 ./out/bin/main.obj
-                0x00000001400011c0                main
-                0x00000001400014ad                printErrorMsg
-                0x0000000140001540                openFile
-                0x0000000140001560                closeFile
-                0x0000000140001579                readFile
-                0x00000001400015a7                writeFile
-                0x00000001400015d5                writeCon
-                0x0000000140001608                scanChar
-                0x000000014000164a                strlen
-                0x000000014000167c                writeByteAtCursor
-                0x00000001400016f3                writeDwordAtCursor
- .text          0x0000000140001760      0x330 ./../IO/./out/lib/io.lib(io.o)
-                0x0000000140001760                _close
-                0x000000014000177e                _commit
-                0x000000014000179c                _creat
-                0x00000001400017c5                _dup
-                0x0000000140001811                _dup2
-                0x0000000140001856                _eof
-                0x00000001400018d2                _lseek
-                0x0000000140001929                _open
-                0x0000000140001952                _read
-                0x00000001400019b8                _tell
-                0x00000001400019e1                _umask
-                0x0000000140001a0c                _write
-                0x0000000140001a72                _get_io_error
- .text          0x0000000140001a90      0xb90 ./../IO/./out/lib/io.lib(scpdos.lib)
-                0x0000000140001a90                SetInterruptVector
-                0x0000000140001aa5                GetInterruptVector
-                0x0000000140001abb                SetDiskVerifyState
-                0x0000000140001ac9                ClearDiskVerifyState
-                0x0000000140001ad7                GetDOSVersion
-                0x0000000140001ae5                GetCtrlBreakState
-                0x0000000140001af6                SetCtrlBreakState
-                0x0000000140001b09                __getErrorInformation
-                0x0000000140001b3e                GetExtendedLastError
-                0x0000000140001b9b                GetLastError
-                0x0000000140001bd5                GetDefaultDiskDPBPointer
-                0x0000000140001bf6                GetDPBPointer
-                0x0000000140001c24                SetCurrentProcessId
-                0x0000000140001c3a                GetCurrentProcessId
-                0x0000000140001c4d                GetPointerToDosSysVars
-                0x0000000140001c60                GenerateDPB
-                0x0000000140001c80                GeneratePartialPSP
-                0x0000000140001c95                GenerateNewPSP
-                0x0000000140001cb2                GetPtrToInDOSFlag
-                0x0000000140001cc5                GetSwitchChar
-                0x0000000140001cd6                SetSwitchChar
-                0x0000000140001ceb                __setDTA
-                0x0000000140001d00                __getDTA
-                0x0000000140001d13                ParseFileName
-                0x0000000140001d3a                CreateDirectory
-                0x0000000140001d59                DeleteDirectory
-                0x0000000140001d78                ChangeCurrentDirectory
-                0x0000000140001d97                CreateFile
-                0x0000000140001db7                OpenFile
-                0x0000000140001de7                CloseFile
-                0x0000000140001e0a                ReadFile
-                0x0000000140001e40                WriteFile
-                0x0000000140001e76                DeleteFile
-                0x0000000140001e98                SetFilePointer
-                0x0000000140001eb9                SetFilePointerL
-                0x0000000140001ee7                GetFileAttributes
-                0x0000000140001f04                SetFileAttributes
-                0x0000000140001f24                DuplicateHandle
-                0x0000000140001f4c                ForceDuplicateHandle
-                0x0000000140001f75                GetCurrentDirectory
-                0x0000000140001fa0                __FindFirst
-                0x0000000140001fcb                FindFirstFile
-                0x0000000140002019                __FindNext
-                0x0000000140002031                FindNextFile
-                0x000000014000206c                FindClose
-                0x000000014000207b                RenameFile
-                0x00000001400020a3                GetFileDateAndTime
-                0x00000001400020d5                SetFileDateAndTime
-                0x00000001400020fd                CreateTemporaryFile
-                0x000000014000211d                CreateUniqueFile
-                0x000000014000213d                GetFQFileName
-                0x0000000140002167                FlushFile
-                0x0000000140002186                ExecProcess
-                0x00000001400021ae                LoadProcess
-                0x00000001400021d6                LoadOverlay
-                0x00000001400021fe                ExitProcess
-                0x0000000140002213                ExitProcessAndStayResidentP
-                0x000000014000222b                ExitProcessAndStayResidentB
-                0x0000000140002239                GetExitCodeProcess
-                0x0000000140002247                __AllocateMemory
-                0x0000000140002262                __FreeMemory
-                0x0000000140002281                __ReallocateMemory
-                0x00000001400022a7                VirtualAllocate
-                0x00000001400022c2                VirtualFree
-                0x00000001400022dd                VirtualReallocate
-                0x0000000140002303                PhysicalAllocate
-                0x000000014000231e                PhysicalFree
-                0x0000000140002339                PhysicalReallocate
-                0x000000014000235f                GetMemoryAllocationStrategy
-                0x000000014000236d                SetMemoryAllocationStrategy
-                0x000000014000238d                GetChar
-                0x000000014000239e                PutChar
-                0x00000001400023b4                AuxInput
-                0x00000001400023c5                AuxOutput
-                0x00000001400023db                PrnOutput
-                0x00000001400023f1                DirectConInAsync
-                0x0000000140002416                DirectConOutAsync
-                0x0000000140002431                DirectConIn
-                0x0000000140002442                ConInput
-                0x0000000140002453                __WriteString
-                0x0000000140002471                WriteString
-                0x00000001400024d0                __GetBufferedInput
-                0x00000001400024e5                GetBufferedInput
-                0x0000000140002523                GetConInputStatus
-                0x0000000140002533                ClearInputBuffer
-                0x0000000140002541                GetDate
-                0x0000000140002576                SetDate
-                0x000000014000259e                GetTime
-                0x00000001400025d2                SetTime
-                0x000000014000260a                GetCountryInformation
+                0x000000014000116f                __main
+ *fill*         0x000000014000119f        0x1 
+ .text          0x00000001400011a0      0x5d0 ./out/bin/main.obj
+                0x00000001400011a0                main
+                0x00000001400014af                printErrorMsg
+                0x0000000140001554                openFile
+                0x0000000140001577                closeFile
+                0x0000000140001592                readFile
+                0x00000001400015bf                writeFile
+                0x00000001400015ec                writeCon
+                0x0000000140001625                scanChar
+                0x0000000140001667                strlen
+                0x0000000140001699                writeByteAtCursor
+                0x0000000140001710                writeDwordAtCursor
+ .text          0x0000000140001770      0x330 ./../IO/./out/lib/io.lib(io.o)
+                0x0000000140001770                _close
+                0x000000014000178e                _commit
+                0x00000001400017ac                _creat
+                0x00000001400017d5                _dup
+                0x0000000140001821                _dup2
+                0x0000000140001866                _eof
+                0x00000001400018e2                _lseek
+                0x0000000140001939                _open
+                0x0000000140001962                _read
+                0x00000001400019c8                _tell
+                0x00000001400019f1                _umask
+                0x0000000140001a1c                _write
+                0x0000000140001a82                _get_io_error
+ .text          0x0000000140001aa0      0xb90 ./../IO/./out/lib/io.lib(scpdos.lib)
+                0x0000000140001aa0                SetInterruptVector
+                0x0000000140001ab5                GetInterruptVector
+                0x0000000140001acb                SetDiskVerifyState
+                0x0000000140001ad9                ClearDiskVerifyState
+                0x0000000140001ae7                GetDOSVersion
+                0x0000000140001af5                GetCtrlBreakState
+                0x0000000140001b06                SetCtrlBreakState
+                0x0000000140001b19                __getErrorInformation
+                0x0000000140001b4e                GetExtendedLastError
+                0x0000000140001bab                GetLastError
+                0x0000000140001be5                GetDefaultDiskDPBPointer
+                0x0000000140001c06                GetDPBPointer
+                0x0000000140001c34                SetCurrentProcessId
+                0x0000000140001c4a                GetCurrentProcessId
+                0x0000000140001c5d                GetPointerToDosSysVars
+                0x0000000140001c70                GenerateDPB
+                0x0000000140001c90                GeneratePartialPSP
+                0x0000000140001ca5                GenerateNewPSP
+                0x0000000140001cc2                GetPtrToInDOSFlag
+                0x0000000140001cd5                GetSwitchChar
+                0x0000000140001ce6                SetSwitchChar
+                0x0000000140001cfb                __setDTA
+                0x0000000140001d10                __getDTA
+                0x0000000140001d23                ParseFileName
+                0x0000000140001d4a                CreateDirectory
+                0x0000000140001d69                DeleteDirectory
+                0x0000000140001d88                ChangeCurrentDirectory
+                0x0000000140001da7                CreateFile
+                0x0000000140001dc7                OpenFile
+                0x0000000140001df7                CloseFile
+                0x0000000140001e1a                ReadFile
+                0x0000000140001e50                WriteFile
+                0x0000000140001e86                DeleteFile
+                0x0000000140001ea8                SetFilePointer
+                0x0000000140001ec9                SetFilePointerL
+                0x0000000140001ef7                GetFileAttributes
+                0x0000000140001f14                SetFileAttributes
+                0x0000000140001f34                DuplicateHandle
+                0x0000000140001f5c                ForceDuplicateHandle
+                0x0000000140001f85                GetCurrentDirectory
+                0x0000000140001fb0                __FindFirst
+                0x0000000140001fdb                FindFirstFile
+                0x0000000140002029                __FindNext
+                0x0000000140002041                FindNextFile
+                0x000000014000207c                FindClose
+                0x000000014000208b                RenameFile
+                0x00000001400020b3                GetFileDateAndTime
+                0x00000001400020e5                SetFileDateAndTime
+                0x000000014000210d                CreateTemporaryFile
+                0x000000014000212d                CreateUniqueFile
+                0x000000014000214d                GetFQFileName
+                0x0000000140002177                FlushFile
+                0x0000000140002196                ExecProcess
+                0x00000001400021be                LoadProcess
+                0x00000001400021e6                LoadOverlay
+                0x000000014000220e                ExitProcess
+                0x0000000140002223                ExitProcessAndStayResidentP
+                0x000000014000223b                ExitProcessAndStayResidentB
+                0x0000000140002249                GetExitCodeProcess
+                0x0000000140002257                __AllocateMemory
+                0x0000000140002272                __FreeMemory
+                0x0000000140002291                __ReallocateMemory
+                0x00000001400022b7                VirtualAllocate
+                0x00000001400022d2                VirtualFree
+                0x00000001400022ed                VirtualReallocate
+                0x0000000140002313                PhysicalAllocate
+                0x000000014000232e                PhysicalFree
+                0x0000000140002349                PhysicalReallocate
+                0x000000014000236f                GetMemoryAllocationStrategy
+                0x000000014000237d                SetMemoryAllocationStrategy
+                0x000000014000239d                GetChar
+                0x00000001400023ae                PutChar
+                0x00000001400023c4                AuxInput
+                0x00000001400023d5                AuxOutput
+                0x00000001400023eb                PrnOutput
+                0x0000000140002401                DirectConInAsync
+                0x0000000140002426                DirectConOutAsync
+                0x0000000140002441                DirectConIn
+                0x0000000140002452                ConInput
+                0x0000000140002463                __WriteString
+                0x0000000140002481                WriteString
+                0x00000001400024e0                __GetBufferedInput
+                0x00000001400024f5                GetBufferedInput
+                0x0000000140002533                GetConInputStatus
+                0x0000000140002543                ClearInputBuffer
+                0x0000000140002551                GetDate
+                0x0000000140002586                SetDate
+                0x00000001400025ae                GetTime
+                0x00000001400025e2                SetTime
+                0x000000014000261a                GetCountryInformation
 
 .rdata          0x0000000140003000      0x200 load address 0x0000000000003000
  .rdata         0x0000000140003000      0x1a0 ./out/bin/main.obj
@@ -180,30 +182,30 @@ LOAD ./../CRT0/out/lib/crt0.lib
  .data          0x0000000140005570        0x0 ./../IO/./out/lib/io.lib(io.o)
  .data          0x0000000140005570        0x0 ./../IO/./out/lib/io.lib(scpdos.lib)
 
-.reloc          0x0000000140006000      0x200 load address 0x0000000000006000
- .reloc         0x0000000140006000       0x18 dll stuff
-
 .rodata
  *(.rodata)
 
-.bss            0x0000000140006020      0x150 load address 0x0000000000006020
-                0x0000000140006020                _BSS_START_ = .
+.bss            0x0000000140005580      0x150 load address 0x0000000000005580
+                0x0000000140005580                _BSS_START_ = .
  *(.bss)
- .bss           0x0000000140006020      0x120 ./out/bin/main.obj
-                0x0000000140006020                switchFlags
-                0x0000000140006040                buffer1
-                0x00000001400060c0                buffer2
- .bss           0x0000000140006140       0x10 ./../IO/./out/lib/io.lib(io.o)
-                0x0000000140006140                umask
- .bss           0x0000000140006150       0x20 ./../IO/./out/lib/io.lib(scpdos.lib)
-                0x0000000140006150                _env
-                0x0000000140006158                _argc
-                0x0000000140006160                _argv
+ .bss           0x0000000140005580      0x120 ./out/bin/main.obj
+                0x0000000140005580                switchFlags
+                0x00000001400055a0                buffer1
+                0x0000000140005620                buffer2
+ .bss           0x00000001400056a0       0x10 ./../IO/./out/lib/io.lib(io.o)
+                0x00000001400056a0                umask
+ .bss           0x00000001400056b0       0x20 ./../IO/./out/lib/io.lib(scpdos.lib)
+                0x00000001400056b0                _env
+                0x00000001400056b8                _argc
+                0x00000001400056c0                _argv
  *(COMMON)
  *(.bss*)
  *(.stack)
-                0x0000000140006170                _BSS_END_ = .
+                0x00000001400056d0                _BSS_END_ = .
 LOAD ./out/bin/main.obj
 LOAD ./../IO/./out/lib/io.lib
 OUTPUT(./out/bin/fc.exe pei-x86-64)
 LOAD dll stuff
+
+.reloc          0x0000000140006000      0x200
+ .reloc         0x0000000140006000        0xc dll stuff
